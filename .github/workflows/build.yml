@@ -84,9 +84,10 @@ jobs:
         run: |
           export CGO_ENABLED=1
           export PKG_CONFIG_PATH=/mingw64/lib/pkgconfig:$PKG_CONFIG_PATH
-          # MSYS2 opencv package installs headers in /mingw64/include/opencv4
-          export CPATH=/mingw64/include/opencv4:$CPATH
+          export CPATH=/mingw64/include/opencv4:/mingw64/include:$CPATH
           export LIBRARY_PATH=/mingw64/lib:$LIBRARY_PATH
+          export CGO_CFLAGS="-I/mingw64/include/opencv4"
+          export CGO_CXXFLAGS="-I/mingw64/include/opencv4"
           go build -v -o auto-wechat-windows.exe main.go
 
       - name: Collect Windows DLLs
