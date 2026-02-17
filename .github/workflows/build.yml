@@ -103,6 +103,9 @@ jobs:
           cp /mingw64/bin/libgcc_s_seh-1.dll dist/
           cp /mingw64/bin/libstdc++-6.dll dist/
           # Add more if needed based on typical gocv requirements
+          cp /mingw64/bin/zlib1.dll dist/
+          cp /mingw64/bin/libtbb12.dll dist/
+          cp /mingw64/bin/libopenblas.dll dist/
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
