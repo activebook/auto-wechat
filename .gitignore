@@ -23,6 +23,9 @@ auto-wechat
 # macOS
 .DS_Store
 
+# Build Logs
+build_logs/
+
 # IDEs
 .idea/
 .vscode/bin/

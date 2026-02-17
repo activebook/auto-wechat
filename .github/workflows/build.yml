@@ -89,7 +89,7 @@ jobs:
           export CGO_CFLAGS="$(pkg-config --cflags opencv4)"
           export CGO_CXXFLAGS="$(pkg-config --cflags opencv4)"
           export CGO_LDFLAGS="$(pkg-config --libs opencv4)"
-          go build -v -o auto-wechat-windows.exe main.go
+          go build -tags customenv -v -o auto-wechat-windows.exe main.go
 
       - name: Collect Windows DLLs
         shell: msys2 {0}
