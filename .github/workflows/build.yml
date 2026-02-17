@@ -73,10 +73,20 @@ jobs:
             mingw-w64-x86_64-pkgconf
             mingw-w64-x86_64-gcc
 
+      - name: Verify OpenCV Installation
+        shell: msys2 {0}
+        run: |
+          pkg-config --cflags --libs opencv4
+          ls -la /mingw64/include/opencv4/opencv2/ || echo "OpenCV2 headers not found in /mingw64/include/opencv4/opencv2/"
+
       - name: Build Windows Binary
         shell: msys2 {0}
         run: |
           export CGO_ENABLED=1
+          export PKG_CONFIG_PATH=/mingw64/lib/pkgconfig:$PKG_CONFIG_PATH
+          # MSYS2 opencv package installs headers in /mingw64/include/opencv4
+          export CPATH=/mingw64/include/opencv4:$CPATH
+          export LIBRARY_PATH=/mingw64/lib:$LIBRARY_PATH
           go build -v -o auto-wechat-windows.exe main.go
 
       - name: Collect Windows DLLs
