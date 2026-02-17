@@ -9,6 +9,7 @@ on:
 
 jobs:
   build-macos:
+    # runs-on: macos-latest
     runs-on: ${{ matrix.os }}
     strategy:
         # Label OS Architecture
@@ -16,12 +17,14 @@ jobs:
         # macos-14 macOS Sonoma (14) Apple Silicon ARM64
         # macos-latest Latest stable (currently 15) ARM64
         # macos-15 macOS Sequoia (15) ARM64
+        # macos-13 was deprecated and is being removed. 
+        # GitHub announced that Intel-based macOS runners (macos-13 and older) are being phased out because Apple itself is moving away from Intel.
       matrix:
-        os: [macos-13, macos-14]
+        os: [macos-14, macos-15]
         include:
-          - os: macos-13
-            arch: amd64
           - os: macos-14
+            arch: arm64
+          - os: macos-15
             arch: arm64
     steps:
       - name: Checkout code
@@ -64,6 +67,7 @@ jobs:
         with:
           msystem: MINGW64
           update: true
+          path-type: inherit
           install: >-
             mingw-w64-x86_64-opencv
             mingw-w64-x86_64-pkgconf
