@@ -81,10 +81,16 @@ jobs:
         run: |
           export CGO_ENABLED=1
           export PKG_CONFIG_PATH=/mingw64/lib/pkgconfig:$PKG_CONFIG_PATH
-          export CPATH=/mingw64/include/opencv4:/mingw64/include:$CPATH
-          export LIBRARY_PATH=/mingw64/lib:$LIBRARY_PATH
           
-          # Build with standard flags
+          # --- FIX 1: Explicitly set CGO flags via pkg-config ---
+          # This was missing in the failing build. It tells the linker which .dll/.a files to use.
+          export CGO_CFLAGS=$(pkg-config --cflags opencv4)
+          export CGO_CXXFLAGS=$(pkg-config --cflags opencv4)
+          export CGO_LDFLAGS=$(pkg-config --libs opencv4)
+          
+          echo "Building with flags: $CGO_LDFLAGS"
+          
+          # -s -w removes debug symbols from the Go binary itself
           go build -tags customenv -v -ldflags="-s -w" -o auto-wechat-windows.exe main.go
 
       - name: Collect Dependencies (Smart Mode)
@@ -93,26 +99,24 @@ jobs:
           mkdir -p dist
           mv auto-wechat-windows.exe dist/
 
-          echo "--- 1. Copying Linked DLLs using ldd ---"
-          # This loops through the binary's dependencies and copies only what is actually linked.
-          # It filters for files in /mingw64/ to avoid copying Windows system files (kernel32, etc).
-          
+          echo "--- 1. Copying Linked DLLs (Automated) ---"
+          # 'ldd' lists the dynamic dependencies. We filter for files in /mingw64/ 
+          # to avoid system files, and copy them to the dist folder.
+          # This automatically grabs standard Qt dlls (Qt6Core, Qt6Gui, etc.)
           ldd dist/auto-wechat-windows.exe | grep '/mingw64/' | awk '{print $3}' | sort | uniq | while read -r dll; do
             echo "Copying $dll"
             cp "$dll" dist/
           done
 
           echo "--- 2. Copying Required Qt Plugins ---"
-          # OpenCV HighGUI with Qt backend REQUIRES the windows platform plugin.
-          # Without this, the app will run but fail to open a window.
-          
+          # Qt apps fail to open without the 'platforms/qwindows.dll' plugin.
+          # It is loaded at runtime, so ldd misses it. We copy it manually.
           mkdir -p dist/platforms
-          # Location of qwindows.dll in MSYS2 Qt6 package
           cp /mingw64/share/qt6/plugins/platforms/qwindows.dll dist/platforms/
           
-          # Also check if qwindows.dll needs extra deps (rare, but safe to check)
+          # We also need to copy dependencies of qwindows.dll itself (it might need extra libs)
           ldd dist/platforms/qwindows.dll | grep '/mingw64/' | awk '{print $3}' | sort | uniq | while read -r dll; do
-             # Only copy if we don't have it yet
+             # Only copy if we don't have it yet to avoid overwrite warnings
              if [ ! -f "dist/$(basename $dll)" ]; then
                 echo "Copying extra Qt dep: $dll"
                 cp "$dll" dist/
@@ -120,10 +124,10 @@ jobs:
           done
 
           echo "--- 3. Reducing Size (Stripping Symbols) ---"
-          # Removes debug info from all DLLs and the EXE to save space
+          # MSYS2 DLLs have heavy debug symbols. Stripping them reduces size by ~50%.
           strip dist/*.exe
           strip dist/*.dll
-          strip dist/platforms/*.dll
+          strip dist/platforms/*.dll || true
 
           echo "--- Final Content ---"
           ls -R dist/
