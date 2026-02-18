@@ -9,23 +9,23 @@ on:
 
 jobs:
   build-macos:
-    # runs-on: macos-latest
-    runs-on: ${{ matrix.os }}
-    strategy:
-        # Label OS Architecture
-        # macos-13 macOS Ventura (13) Intel x86_64
-        # macos-14 macOS Sonoma (14) Apple Silicon ARM64
-        # macos-latest Latest stable (currently 15) ARM64
-        # macos-15 macOS Sequoia (15) ARM64
-        # macos-13 was deprecated and is being removed. 
-        # GitHub announced that Intel-based macOS runners (macos-13 and older) are being phased out because Apple itself is moving away from Intel.
-      matrix:
-        os: [macos-14, macos-15]
-        include:
-          - os: macos-14
-            arch: arm64
-          - os: macos-15
-            arch: arm64
+    runs-on: macos-latest
+    # runs-on: ${{ matrix.os }}
+    # strategy:
+    #     # Label OS Architecture
+    #     # macos-13 macOS Ventura (13) Intel x86_64
+    #     # macos-14 macOS Sonoma (14) Apple Silicon ARM64
+    #     # macos-latest Latest stable (currently 15) ARM64
+    #     # macos-15 macOS Sequoia (15) ARM64
+    #     # macos-13 was deprecated and is being removed. 
+    #     # GitHub announced that Intel-based macOS runners (macos-13 and older) are being phased out because Apple itself is moving away from Intel.
+    #   matrix:
+    #     os: [macos-14, macos-15]
+    #     include:
+    #       - os: macos-14
+    #         arch: arm64
+    #       - os: macos-15
+    #         arch: arm64
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -41,14 +41,16 @@ jobs:
           brew install opencv pkg-config
 
       - name: Build macOS Binary
-        run: |
-          go build -v -o auto-wechat-macos-${{ matrix.arch }} main.go
+        run: go build -v -o auto-wechat-macos-arm64 main.go
+          # go build -v -o auto-wechat-macos-${{ matrix.arch }} main.go
 
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: auto-wechat-macos-${{ matrix.arch }}
-          path: auto-wechat-macos-${{ matrix.arch }}
+          # name: auto-wechat-macos-${{ matrix.arch }}
+          # path: auto-wechat-macos-${{ matrix.arch }}
+          name: auto-wechat-macos-arm64
+          path: auto-wechat-macos-arm64
 
   build-windows:
     runs-on: windows-latest
@@ -72,6 +74,7 @@ jobs:
             mingw-w64-x86_64-opencv
             mingw-w64-x86_64-pkgconf
             mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-qt6-base
 
       - name: Verify OpenCV Installation
         shell: msys2 {0}
@@ -97,14 +100,18 @@ jobs:
           mkdir -p dist
           cp auto-wechat-windows.exe dist/
 
-          # Dynamically resolve ALL transitive DLL dependencies (incl. Qt6, OpenCV, MinGW runtime)
-          # using ldd, then copy every DLL that lives under /mingw64/bin/.
-          ldd auto-wechat-windows.exe \
-            | awk '/\/mingw64\/bin\// { print $3 }' \
-            | xargs -I{} cp -n "{}" dist/
+          # ldd on Windows runners emits Windows-style paths (e.g. C:/msys64/mingw64/bin/foo.dll).
+          # Normalise by matching on 'mingw64/bin' regardless of prefix, then resolve to /mingw64/bin/.
+          resolve_deps() {
+            ldd "$1" 2>/dev/null \
+              | awk '/mingw64\/bin/ { gsub(/.*mingw64\/bin\//, "/mingw64/bin/"); print }'
+          }
 
-          # Recursively chase second-order deps (Qt plugins, image-format DLLs, etc.)
-          # until no new DLLs are discovered.
+          # First-order deps from the exe
+          resolve_deps auto-wechat-windows.exe \
+            | xargs -I{} cp -n "{}" dist/ 2>/dev/null || true
+
+          # Fixpoint loop: chase transitive deps until stable
           changed=1
           while [ "$changed" = "1" ]; do
             changed=0
@@ -115,7 +122,7 @@ jobs:
                   cp "/mingw64/bin/$base" dist/
                   changed=1
                 fi
-              done < <(ldd "$dll" 2>/dev/null | awk '/\/mingw64\/bin\// { print $3 }')
+              done < <(resolve_deps "$dll")
             done
           done
 
