@@ -82,15 +82,12 @@ jobs:
           export CGO_ENABLED=1
           export PKG_CONFIG_PATH=/mingw64/lib/pkgconfig:$PKG_CONFIG_PATH
           
-          # --- FIX 1: Explicitly set CGO flags via pkg-config ---
-          # This was missing in the failing build. It tells the linker which .dll/.a files to use.
+          # Set CGO flags so Go knows where to link OpenCV
           export CGO_CFLAGS=$(pkg-config --cflags opencv4)
           export CGO_CXXFLAGS=$(pkg-config --cflags opencv4)
           export CGO_LDFLAGS=$(pkg-config --libs opencv4)
           
-          echo "Building with flags: $CGO_LDFLAGS"
-          
-          # -s -w removes debug symbols from the Go binary itself
+          # Build: -s -w removes debug symbols to reduce size
           go build -tags customenv -v -ldflags="-s -w" -o auto-wechat-windows.exe main.go
 
       - name: Collect Dependencies (Smart Mode)
@@ -99,32 +96,36 @@ jobs:
           mkdir -p dist
           mv auto-wechat-windows.exe dist/
 
-          echo "--- 1. Copying Linked DLLs (Automated) ---"
-          # 'ldd' lists the dynamic dependencies. We filter for files in /mingw64/ 
-          # to avoid system files, and copy them to the dist folder.
-          # This automatically grabs standard Qt dlls (Qt6Core, Qt6Gui, etc.)
+          echo "--- 1. Copying Linked DLLs (ldd) ---"
+          # Detects direct dependencies (Qt6Core, OpenCV, etc.)
           ldd dist/auto-wechat-windows.exe | grep '/mingw64/' | awk '{print $3}' | sort | uniq | while read -r dll; do
             echo "Copying $dll"
             cp "$dll" dist/
           done
 
           echo "--- 2. Copying Required Qt Plugins ---"
-          # Qt apps fail to open without the 'platforms/qwindows.dll' plugin.
-          # It is loaded at runtime, so ldd misses it. We copy it manually.
+          # Qt Windows Platform Plugin (Required for GUI)
           mkdir -p dist/platforms
           cp /mingw64/share/qt6/plugins/platforms/qwindows.dll dist/platforms/
           
-          # We also need to copy dependencies of qwindows.dll itself (it might need extra libs)
+          # Check dependencies of qwindows.dll
           ldd dist/platforms/qwindows.dll | grep '/mingw64/' | awk '{print $3}' | sort | uniq | while read -r dll; do
-             # Only copy if we don't have it yet to avoid overwrite warnings
              if [ ! -f "dist/$(basename $dll)" ]; then
                 echo "Copying extra Qt dep: $dll"
                 cp "$dll" dist/
              fi
           done
 
+          echo "--- 2.1 Copying Runtime Loaded DLLs (Vulkan) ---"
+          # Qt6 uses Vulkan for rendering but loads it at runtime, so ldd misses it.
+          if [ -f "/mingw64/bin/vulkan-1.dll" ]; then
+             echo "Copying vulkan-1.dll"
+             cp /mingw64/bin/vulkan-1.dll dist/
+          else
+             echo "Warning: vulkan-1.dll not found, app might crash on some systems."
+          fi
+
           echo "--- 3. Reducing Size (Stripping Symbols) ---"
-          # MSYS2 DLLs have heavy debug symbols. Stripping them reduces size by ~50%.
           strip dist/*.exe
           strip dist/*.dll
           strip dist/platforms/*.dll || true
