@@ -100,31 +100,16 @@ jobs:
           mkdir -p dist
           cp auto-wechat-windows.exe dist/
 
-          # ldd on Windows runners emits Windows-style paths (e.g. C:/msys64/mingw64/bin/foo.dll).
-          # Normalise by matching on 'mingw64/bin' regardless of prefix, then resolve to /mingw64/bin/.
-          resolve_deps() {
-            ldd "$1" 2>/dev/null \
-              | awk '/mingw64\/bin/ { gsub(/.*mingw64\/bin\//, "/mingw64/bin/"); print }'
-          }
+          # Use pacman's own dependency graph — authoritative, never misses a DLL.
+          # pactree lists all transitive runtime deps of opencv; pacman -Ql lists
+          # every file owned by those packages; we grab the .dll ones from /mingw64/bin/.
+          pactree -u mingw-w64-x86_64-opencv \
+            | xargs pacman -Ql \
+            | awk '/\/mingw64\/bin\/.*\.dll$/ { print $2 }' \
+            | xargs -I{} cp -n "{}" dist/
 
-          # First-order deps from the exe
-          resolve_deps auto-wechat-windows.exe \
-            | xargs -I{} cp -n "{}" dist/ 2>/dev/null || true
-
-          # Fixpoint loop: chase transitive deps until stable
-          changed=1
-          while [ "$changed" = "1" ]; do
-            changed=0
-            for dll in dist/*.dll; do
-              while IFS= read -r dep; do
-                base=$(basename "$dep")
-                if [ ! -f "dist/$base" ] && [ -f "/mingw64/bin/$base" ]; then
-                  cp "/mingw64/bin/$base" dist/
-                  changed=1
-                fi
-              done < <(resolve_deps "$dll")
-            done
-          done
+          echo "--- DLLs collected ---"
+          ls dist/
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
