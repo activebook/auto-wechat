@@ -27,10 +27,11 @@ auto-wechat
 build_logs/
 
 # Configs
-cfgs/
+cfgs/settings.yml
 
 # Images
-imgs/last_one.png
+imgs/last_contact.png
+imgs/app.png
 imgs/screen.png
 
 # IDEs

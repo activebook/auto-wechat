@@ -27,6 +27,7 @@ type Settings struct {
 	MaxCount      int    `yaml:"max_count"` // Maximum number of messages to send
 	CheckEnd      bool   `yaml:"check_end"` // Whether check the last one is the end of contacts list
 	AutoSend      bool   `yaml:"auto_send"` // Whether auto send message or not
+	Debug         bool   `yaml:"debug"`     // Whether debug or not
 }
 
 func RunScanner() {

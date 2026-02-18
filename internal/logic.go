@@ -3,10 +3,13 @@ package internal
 import (
 	"fmt"
 	"image"
+	"image/draw"
+	"os"
 	"os/exec"
 	"runtime"
 
 	"github.com/go-vgo/robotgo"
+	hook "github.com/robotn/gohook"
 	"github.com/vcaesar/gcv"
 )
 
@@ -24,30 +27,53 @@ func init() {
 	robotgo.KeySleep = 50
 }
 
-func LeftClick() {
+func LeftClick(msg string) {
 	robotgo.Click("left")
-	// robotgo.MilliSleep(50)
+	if settings.Debug {
+		fmt.Printf("Left Click: %s\n", msg)
+		robotgo.MilliSleep(1000)
+	}
 }
 
-func RightClick() {
+func RightClick(msg string) {
 	robotgo.Click("right")
-	// robotgo.MilliSleep(50)
+	robotgo.MilliSleep(robotgo.MouseSleep) // because right click need time to response
+	if settings.Debug {
+		fmt.Printf("Right Click: %s\n", msg)
+		robotgo.MilliSleep(1000)
+	}
 }
 
-func PressEsc() {
+func PressEsc(msg string) {
 	robotgo.KeyTap("esc")
+	if settings.Debug {
+		fmt.Printf("Press Esc: %s\n", msg)
+		robotgo.MilliSleep(1000)
+	}
 }
 
-func PressEnter() {
+func PressEnter(msg string) {
 	robotgo.KeyTap("enter")
+	if settings.Debug {
+		fmt.Printf("Press Enter: %s\n", msg)
+		robotgo.MilliSleep(1000)
+	}
 }
 
-func PressUp() {
+func PressUp(msg string) {
 	robotgo.KeyTap("up")
+	if settings.Debug {
+		fmt.Printf("Press Up: %s\n", msg)
+		robotgo.MilliSleep(1000)
+	}
 }
 
-func PressDown() {
+func PressDown(msg string) {
 	robotgo.KeyTap("down")
+	if settings.Debug {
+		fmt.Printf("Press Down: %s\n", msg)
+		robotgo.MilliSleep(1000)
+	}
 }
 
 func GetClipboard() (string, error) {
@@ -58,6 +84,7 @@ func SetClipboard(text string) {
 	robotgo.WriteAll(text)
 }
 
+// Bug on macos
 // func PasteClipboard() {
 // 	err := robotgo.CmdV()
 // 	if err != nil {
@@ -65,43 +92,96 @@ func SetClipboard(text string) {
 // 	}
 // }
 
-func PasteClipboard() {
+func PasteClipboard(msg string) {
 	if runtime.GOOS == "darwin" {
 		cmd := exec.Command("osascript", "-e", `tell application "System Events" to keystroke "v" using command down`)
 		cmd.Run()
 	} else {
 		robotgo.CmdV()
 	}
-	robotgo.MilliSleep(100)
+	robotgo.MilliSleep(settings.Interval) // because paste need time to response
+	if settings.Debug {
+		fmt.Printf("Paste Clipboard: %s\n", msg)
+		robotgo.MilliSleep(1000)
+	}
 }
 
-func MoveTo(x, y int) {
+func MoveTo(x, y int, msg string) {
 	robotgo.Move(x, y)
-	// robotgo.MilliSleep(100)
+	if settings.Debug {
+		fmt.Printf("Move to (%d, %d): %s\n", x, y, msg)
+		robotgo.MilliSleep(1000)
+	}
+
 }
 
-func MoveRelative(x, y int) {
+func MoveRelative(x, y int, msg string) {
 	robotgo.MoveRelative(x, y)
-	// robotgo.MilliSleep(100)
+	if settings.Debug {
+		fmt.Printf("Move relative (%d, %d): %s\n", x, y, msg)
+		robotgo.MilliSleep(1000)
+	}
 }
 
-func ActiveApp() error {
-	return robotgo.ActiveName(settings.AppTitle)
-
+func ActivateApp(msg string) error {
+	err := robotgo.ActiveName(settings.AppTitle)
+	if settings.Debug {
+		fmt.Printf("Active App: %s\n", msg)
+	}
+	return err
 }
+
+func HookExit() {
+	fmt.Println("--- Please press ctrl + shift + q to stop ---")
+	hook.Register(hook.KeyDown, []string{"q", "ctrl", "shift"}, func(e hook.Event) {
+		fmt.Println("Stopped.")
+		hook.End()
+		os.Exit(0)
+	})
+
+	s := hook.Start()
+	hook.Process(s)
+}
+
+func GetAppWindowBounds() (x, y, width, height int, err error) {
+	pids, err := robotgo.FindIds(settings.AppTitle)
+	if err != nil || len(pids) == 0 {
+		return 0, 0, 0, 0, fmt.Errorf("%s not found", settings.AppTitle)
+	}
+
+	x, y, width, height = robotgo.GetBounds(pids[0])
+	return x, y, width, height, nil
+}
+
+const (
+	MsgWeChat        = "WeChat"
+	MsgContacts      = "Contacts Button"
+	MsgMore          = "More Button"
+	MsgLastContact   = "Last Contact"
+	MsgMessagesBar   = "Messages Bar"
+	MsgMessagesPopup = "Messages Popup"
+	MsgMessagesInput = "Messages Input Area"
+	MsgOutOfScreen   = "Out of Screen"
+)
 
 // --- Automation Logic ---
 
 func RunAutomation() {
 	// Read Settings
 	settings = ReadSettings()
-	fmt.Printf("Loaded settings: %+v\n", settings)
+	if settings.Debug {
+		fmt.Printf("Loaded settings: %+v\n", settings)
+	}
 
-	err := ActiveApp()
+	// Activate App
+	err := ActivateApp(MsgWeChat)
 	if err != nil {
 		fmt.Println("active app error: ", err)
 		return
 	}
+
+	// Hook exit message
+	HookExit()
 
 	fmt.Println("Starting automation sequence...")
 
@@ -110,7 +190,7 @@ func RunAutomation() {
 		GotoLastContact()
 		end := GotoNextContact()
 		if end {
-			fmt.Println("End of contact list.")
+			fmt.Println("Reach the end of contact list.")
 			break
 		}
 
@@ -125,20 +205,17 @@ func RunAutomation() {
 func GotoLastContact() {
 
 	// Go to Contacts
-	fmt.Println("Moving to Contacts...")
-	MoveTo(settings.Contacts.X+settings.Contacts.MarginX, settings.Contacts.Y+settings.Contacts.MarginY)
-	LeftClick() // Left Click
+	MoveTo(settings.Contacts.X+settings.Contacts.MarginX, settings.Contacts.Y+settings.Contacts.MarginY, MsgContacts)
+	LeftClick(MsgContacts) // Left Click
 
 	// Go to More
-	fmt.Println("Moving to More...")
-	MoveTo(settings.More.X+settings.More.MarginX, settings.More.Y+settings.More.MarginY)
-	LeftClick()  // Left Click
-	RightClick() // Right Click
+	MoveTo(settings.More.X+settings.More.MarginX, settings.More.Y+settings.More.MarginY, MsgMore)
+	LeftClick(MsgLastContact)  // Left Click
+	RightClick(MsgLastContact) // Right Click
 
 	// Press Esc
-	fmt.Println("Press Esc...")
-	PressEsc()  // Press Esc
-	LeftClick() // Left Click
+	PressEsc(MsgLastContact)
+	LeftClick(MsgLastContact) // Left Click
 
 	// After doing this, we can now get the focus on the contact list
 
@@ -156,8 +233,7 @@ func GotoNextContact() bool {
 	}
 
 	// Press Down
-	fmt.Println("Press Down...")
-	PressDown()
+	PressDown(MsgLastContact)
 
 	// Check if contact changed
 	if settings.CheckEnd {
@@ -171,56 +247,88 @@ func GotoNextContact() bool {
 
 func SendMessage() {
 	// Go to More
-	fmt.Println("Moving to More...")
-	MoveTo(settings.More.X+settings.More.MarginX, settings.More.Y+settings.More.MarginY)
-	RightClick() // Right Click
+	MoveTo(settings.More.X+settings.More.MarginX, settings.More.Y+settings.More.MarginY, MsgMore)
+	RightClick(MsgLastContact) // Right Click
 
 	// Go to Messages
-	fmt.Println("Moving to Messages Popup...")
-	MoveRelative(settings.MessagesPopup.MarginX, settings.MessagesPopup.MarginY)
-	LeftClick()
+	MoveRelative(settings.MessagesPopup.MarginX, settings.MessagesPopup.MarginY, MsgMessagesPopup)
+	LeftClick(MsgMessagesPopup)
 
 	// Go to MessagesBar
-	fmt.Println("Moving to MessagesBar...")
-	MoveTo(settings.MessagesBar.X+settings.MessagesBar.MarginX, settings.MessagesBar.Y+settings.MessagesBar.MarginY)
-	LeftClick()
+	MoveTo(settings.MessagesBar.X+settings.MessagesBar.MarginX, settings.MessagesBar.Y+settings.MessagesBar.MarginY, MsgMessagesBar)
+	LeftClick(MsgMessagesInput)
 
 	// Paste clipboard
-	fmt.Println("Paste clipboard...")
-	PasteClipboard()
+	PasteClipboard(MsgMessagesInput)
 
 	// Press Enter
 	if settings.AutoSend {
-		fmt.Println("Press Enter...")
-		PressEnter()
+		PressEnter(MsgMessagesInput)
 	}
 }
 
 // Helpers for checks
+
+func normalizeImage(src image.Image) image.Image {
+	bounds := src.Bounds()
+	dst := image.NewRGBA(bounds)
+	draw.Draw(dst, bounds, src, bounds.Min, draw.Src)
+	return dst
+}
+
+func captureAppImage() image.Image {
+	ax, ay, aw, ah, err := GetAppWindowBounds()
+	if err != nil {
+		fmt.Println("get app window bounds error: ", err)
+		return nil
+	}
+	MoveTo(-100, -100, MsgOutOfScreen) // hide cursor
+	captured, err := robotgo.CaptureImg(ax, ay, aw, ah)
+	if err != nil {
+		fmt.Printf("captureAppImage: capture failed: %v\n", err)
+		return nil
+	}
+	// Must save and reload to get correct image
+	// robotgo.Save(captured, "imgs/app.png")
+	// img, _, _ := robotgo.DecodeImg("imgs/app.png")
+
+	// Bugfix: the raw image returned in memory has a different color format
+	// (typically BGRA or some platform-specific byte order)
+	// than what gcv.FindImg expects (usually RGBA or standard Go image.RGBA).
+	img := normalizeImage(captured)
+	return img
+}
 
 func captureContact() {
 	x, y := robotgo.Location()
 	// Capture a small area around the current mouse position (Contact list item)
 	// Assuming 100x40 is enough to see the contact name/avatar change
 	// Adjust offset to center the capture or ensuring it hits the list item
-	MoveTo(-100, -100) // hide cursor
+	MoveTo(-100, -100, MsgOutOfScreen) // hide cursor
 	captured, err := robotgo.CaptureImg(x-50, y-20, 100, 40)
 	if err != nil {
 		fmt.Printf("captureContact: capture failed: %v\n", err)
 		return
 	}
 	// Must save and reload to get correct image
-	robotgo.Save(captured, "imgs/last_one.png")
-	lastContactImg, _, _ = robotgo.DecodeImg("imgs/last_one.png")
-	// Get full screen image
-	img, _ := robotgo.CaptureImg()
-	// robotgo.Save(img, "imgs/screen.png")
-	_, best_match, _, best_points := gcv.FindImg(lastContactImg, img)
+	// robotgo.Save(captured, "imgs/last_contact.png")
+	// lastContactImg, _, _ = robotgo.DecodeImg("imgs/last_contact.png")
+
+	// Bugfix: the raw image returned in memory has a different color format
+	// (typically BGRA or some platform-specific byte order)
+	// than what gcv.FindImg expects (usually RGBA or standard Go image.RGBA).
+	lastContactImg = normalizeImage(captured)
+
+	// Get App Image and find contact inside it
+	appImg := captureAppImage()
+	_, best_match, _, best_points := gcv.FindImg(lastContactImg, appImg)
 	if best_match > 0.9 {
 		lastContactPos = best_points
-		fmt.Printf("Last contact pos: %v [match:%0.3f]\n", lastContactPos, best_match)
+		if settings.Debug {
+			fmt.Printf("Last contact pos: %v [match:%0.3f]\n", lastContactPos, best_match)
+		}
 	} else {
-		fmt.Errorf("Last contact not found: %f\n", best_match)
+		fmt.Printf("Last contact not found: [match:%0.3f]\n", best_match)
 	}
 }
 
@@ -231,8 +339,8 @@ func checkContactChanged() bool {
 
 	// Using gcv.FindImg with high threshold to check equality
 	// If FindImg returns a very high match, they are the same.
-	img, _ := robotgo.CaptureImg()
-	_, bestMatch, _, best_points := gcv.FindImg(lastContactImg, img)
+	appImg := captureAppImage()
+	_, bestMatch, _, best_points := gcv.FindImg(lastContactImg, appImg)
 
 	// Since we are capturing the exact same region, identical images should match near 1.0 (or > 0.99)
 	// Use 0.95 to account for minor rendering artifacts, or 0.99 for strictness.
