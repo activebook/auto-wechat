@@ -1,7 +1,7 @@
 # auto-wechat
 
 A desktop automation tool that bulk-sends messages to every contact in WeChat's contact list using clipboard content.
-It uses computer-vision (OpenCV via [gocv](https://gocv.io)) to locate UI elements and [robotgo](https://github.com/go-vgo/robotgo) to drive the mouse and keyboard — no WeChat API or plugin required.
+It uses computer-vision (OpenCV via [gocv](https://gocv.io)) to locate UI elements and to drive the mouse and keyboard — no WeChat API or plugin required.
 
 ## How it works
 
@@ -61,7 +61,13 @@ make build
 | `auto_send` | `true` | Press Enter after pasting; set `false` to review first |
 | `debug` | `false` | Pause 1 s after each action and print step logs |
 
-Copy `cfgs/settings-template.yml` to `cfgs/settings.yml` as a starting point, then run `scan` to populate the coordinates for your screen.
+## Performance Optimization
+
+The tool uses OpenCV for two main purposes:
+1. **Calibration**: Locating UI elements during the `scan` phase.
+2. **End Detection**: Comparing images to detect when the contact list has ended (`check_end: true`).
+
+If you have already calibrated the positions and set `check_end: false`, the tool will skip all OpenCV image processing and operate purely on coordinate-based automation, which is significantly faster.
 
 ## Stop at any time
 
