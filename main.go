@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"strconv"
 
+	"github.com/activebook/auto-wechat/internal"
 	"github.com/go-vgo/robotgo"
 	hook "github.com/robotn/gohook"
 	"github.com/vcaesar/bitmap"
@@ -13,6 +15,7 @@ import (
 )
 
 func main() {
+	// internal.RunScanner()
 	// test_mouse()
 	// test_keyboard()
 	// test_clipboard()
@@ -22,6 +25,25 @@ func main() {
 	// test_opencv2()
 	// test_hook()
 	// test_win()
+
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: auto-wechat <subcommand>")
+		fmt.Println("Subcommands:")
+		fmt.Println("  scan  - Scan for UI elements and save to settings.yml")
+		fmt.Println("  proc  - Run automation process based on settings.yml")
+		return
+	}
+
+	subcmd := os.Args[1]
+	switch subcmd {
+	case "scan":
+		internal.RunScanner()
+	case "proc":
+		internal.RunAutomation()
+	default:
+		fmt.Println("Unknown subcommand:", subcmd)
+	}
+
 }
 
 func test_mouse() {
@@ -205,7 +227,7 @@ func test_opencv() {
 // negative = inverse match
 func test_opencv2() {
 	img, _ := robotgo.CaptureImg()
-	img1, format, _ := robotgo.DecodeImg("imgs/messages_light.png")
+	img1, format, _ := robotgo.DecodeImg("imgs/last_one.png")
 	fmt.Println("format: ", format)
 	fmt.Println("gcv find image: ")
 	least_match, best_match, least_points, best_points := gcv.FindImg(img1, img)
