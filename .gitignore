@@ -25,6 +25,7 @@ auto-wechat
 
 # Build Logs
 build_logs/
+cfgs/
 
 # IDEs
 .idea/

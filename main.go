@@ -19,7 +19,7 @@ func main() {
 	// test_screen()
 	// test_bitmap()
 	// test_opencv()
-	test_opencv2()
+	// test_opencv2()
 	// test_hook()
 	// test_win()
 }
@@ -205,7 +205,7 @@ func test_opencv() {
 // negative = inverse match
 func test_opencv2() {
 	img, _ := robotgo.CaptureImg()
-	img1, format, _ := robotgo.DecodeImg("messages.png")
+	img1, format, _ := robotgo.DecodeImg("imgs/messages_light.png")
 	fmt.Println("format: ", format)
 	fmt.Println("gcv find image: ")
 	least_match, best_match, least_points, best_points := gcv.FindImg(img1, img)
