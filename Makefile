@@ -39,11 +39,12 @@ clean:
 
 # ─── Release ─────────────────────────────────────────────────────────────────
 
-RELEASE_NAME := $(BINARY_NAME)-$(OS)-$(ARCH)-$(VERSION)
+#RELEASE_NAME := $(BINARY_NAME)-$(OS)-$(ARCH)-$(VERSION)
+RELEASE_NAME := $(BINARY_NAME)-$(OS)-$(ARCH)
 
 ## release: build a versioned binary for the current platform, bundle assets, and zip
 release: clean
-	@echo "→ Building $(BINARY_NAME) $(VERSION) for $(OS)/$(ARCH)"
+	@echo "→ Building $(BINARY_NAME) for $(OS)/$(ARCH)"
 	@mkdir -p $(DIST_DIR)/$(RELEASE_NAME)/cfgs $(DIST_DIR)/$(RELEASE_NAME)/imgs
 	CGO_ENABLED=1 go build \
 		-trimpath \
