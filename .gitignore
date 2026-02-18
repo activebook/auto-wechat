@@ -17,6 +17,9 @@
 # Distribution
 dist/
 
+# Design
+Design.md
+
 # Go workspace file
 go.work
 

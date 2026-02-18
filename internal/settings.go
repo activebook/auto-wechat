@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/go-vgo/robotgo"
 	"github.com/vcaesar/gcv"
@@ -30,17 +31,43 @@ type Settings struct {
 	Debug         bool   `yaml:"debug"`     // Whether debug or not
 }
 
+func GetAppDir() string {
+	ex, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	return filepath.Dir(ex)
+}
+
 func RunScanner() {
 	// Load existing settings if available to preserve margins
-	settings := ReadSettings()
+	// Note: ReadSettings now terminates if file not found, but for scanner we might want to allow it?
+	// Actually scanner creates it, so we should check if we can read it, if not, start empty or default.
+	// But ReadSettings handles loading. If it fails, it exits.
+	// For Scanner: checking if file exists is good to preserve margins.
+	// The requirement Bug 2 says "if cfgs folder and file don't exist, it should prompt error to tell user to get it first".
+	// This likely applies to 'proc' mode (RunAutomation).
+	// For 'scan', we probably want to allow running even if setttings.yml is partial?
+	// But let's stick to the request: prompt error.
+	settings = ReadSettings()
+
+	// Activate App
+	err := ActivateApp(MsgWeChat)
+	if err != nil {
+		fmt.Println("active app error: ", err)
+		fmt.Println("Please open WeChat app first.")
+		return
+	}
+
+	appDir := GetAppDir()
 
 	// 1. Scan Contacts
 	// Try light and light_selected first, then dark and dark_selected
 	contactsImgs := []string{
-		"imgs/contacts_light.png",
-		"imgs/contacts_light_selected.png",
-		"imgs/contacts_dark.png",
-		"imgs/contacts_dark_selected.png",
+		filepath.Join(appDir, "imgs/contacts_light.png"),
+		filepath.Join(appDir, "imgs/contacts_light_selected.png"),
+		filepath.Join(appDir, "imgs/contacts_dark.png"),
+		filepath.Join(appDir, "imgs/contacts_dark_selected.png"),
 	}
 	if p, err := findPoint(contactsImgs); err == nil {
 		fmt.Printf("Found Contacts at: %v\n", p)
@@ -52,8 +79,8 @@ func RunScanner() {
 
 	// 2. Scan More
 	moreImgs := []string{
-		"imgs/more_light.png",
-		"imgs/more_dark.png",
+		filepath.Join(appDir, "imgs/more_light.png"),
+		filepath.Join(appDir, "imgs/more_dark.png"),
 	}
 	if p, err := findPoint(moreImgs); err == nil {
 		fmt.Printf("Found More at: %v\n", p)
@@ -65,8 +92,8 @@ func RunScanner() {
 
 	// 3. Scan MessagesBar
 	messagesbarImgs := []string{
-		"imgs/messages_bar_light.png",
-		"imgs/messages_bar_dark.png",
+		filepath.Join(appDir, "imgs/messages_bar_light.png"),
+		filepath.Join(appDir, "imgs/messages_bar_dark.png"),
 	}
 	if p, err := findPoint(messagesbarImgs); err == nil {
 		fmt.Printf("Found MessagesBar at: %v\n", p)
@@ -117,21 +144,33 @@ func saveSettings(settings Settings) {
 		log.Fatalf("error: %v", err)
 	}
 
+	appDir := GetAppDir()
+	cfgsDir := filepath.Join(appDir, "cfgs")
+	settingsPath := filepath.Join(cfgsDir, "settings.yml")
+
 	// Ensure cfgs directory exists
-	if _, err := os.Stat("cfgs"); os.IsNotExist(err) {
-		os.Mkdir("cfgs", 0755)
+	if _, err := os.Stat(cfgsDir); os.IsNotExist(err) {
+		os.Mkdir(cfgsDir, 0755)
 	}
 
-	err = os.WriteFile("cfgs/settings.yml", data, 0644)
+	err = os.WriteFile(settingsPath, data, 0644)
 	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
-	fmt.Println("Settings saved to cfgs/settings.yml")
+	fmt.Printf("Settings saved to %s\n", settingsPath)
 }
 
 func ReadSettings() Settings {
 	var settings Settings
-	data, err := os.ReadFile("cfgs/settings.yml")
+	appDir := GetAppDir()
+	settingsPath := filepath.Join(appDir, "cfgs", "settings.yml")
+
+	// Check if file exists
+	if _, err := os.Stat(settingsPath); os.IsNotExist(err) {
+		log.Fatalf("Config file not found at %s. Please copy cfgs/settings-template.yml to cfgs/settings.yml and configure it.", settingsPath)
+	}
+
+	data, err := os.ReadFile(settingsPath)
 	if err != nil {
 		log.Fatalf("error reading settings: %v", err)
 	}

@@ -7,6 +7,26 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/main.go"
+        },
+        {
+            "name": "Scan",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/main.go",
+            "args": [
+                "scan"
+            ]
+        },
+        {
+            "name": "Proc",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/main.go",
+            "args": [
+                "proc"
+            ]
         }
     ]
 }

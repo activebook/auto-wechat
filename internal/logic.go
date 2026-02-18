@@ -6,6 +6,7 @@ import (
 	"image/draw"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 
 	"github.com/go-vgo/robotgo"
@@ -173,10 +174,19 @@ func RunAutomation() {
 		fmt.Printf("Loaded settings: %+v\n", settings)
 	}
 
+	// Check if imgs folder exists
+	appDir := GetAppDir()
+	imgsDir := filepath.Join(appDir, "imgs")
+	if _, err := os.Stat(imgsDir); os.IsNotExist(err) {
+		fmt.Printf("Images directory not found at: %s. Please make sure the 'imgs' folder is present.\n", imgsDir)
+		return
+	}
+
 	// Activate App
 	err := ActivateApp(MsgWeChat)
 	if err != nil {
 		fmt.Println("active app error: ", err)
+		fmt.Println("Please open WeChat app first.")
 		return
 	}
 
@@ -284,7 +294,7 @@ func captureAppImage() image.Image {
 	}
 	MoveTo(-100, -100, MsgOutOfScreen) // hide cursor
 	captured, err := robotgo.CaptureImg(ax, ay, aw, ah)
-	if err != nil {
+	if err != nil || captured == nil {
 		fmt.Printf("captureAppImage: capture failed: %v\n", err)
 		return nil
 	}
@@ -306,7 +316,7 @@ func captureContact() {
 	// Adjust offset to center the capture or ensuring it hits the list item
 	MoveTo(-100, -100, MsgOutOfScreen) // hide cursor
 	captured, err := robotgo.CaptureImg(x-50, y-20, 100, 40)
-	if err != nil {
+	if err != nil || captured == nil {
 		fmt.Printf("captureContact: capture failed: %v\n", err)
 		return
 	}
