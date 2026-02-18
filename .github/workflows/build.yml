@@ -40,9 +40,22 @@ jobs:
         run: |
           brew install opencv pkg-config
 
-      - name: Build macOS Binary
-        run: go build -v -o auto-wechat-macos-arm64 main.go
-          # go build -v -o auto-wechat-macos-${{ matrix.arch }} main.go
+      # go build -v -o auto-wechat-macos-${{ matrix.arch }} main.go
+      - name: Build and Package macOS
+        run: |
+          # 1. Create a distribution folder
+          mkdir -p dist
+          
+          # 2. Build the binary directly into that folder
+          go build -v -o dist/auto-wechat-macos-arm64 main.go
+          
+          # 3. Copy resource folders
+          # The -r flag copies directories recursively
+          cp -r imgs dist/
+          cp -r cfgs dist/
+          
+          echo "--- Content of MacOS dist ---"
+          ls -R dist/
 
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
@@ -50,7 +63,7 @@ jobs:
           # name: auto-wechat-macos-${{ matrix.arch }}
           # path: auto-wechat-macos-${{ matrix.arch }}
           name: auto-wechat-macos-arm64
-          path: auto-wechat-macos-arm64
+          path: dist/
 
   build-windows:
     runs-on: windows-latest
@@ -125,7 +138,11 @@ jobs:
              echo "Warning: vulkan-1.dll not found, app might crash on some systems."
           fi
 
-          echo "--- 3. Reducing Size (Stripping Symbols) ---"
+          echo "--- 3. Copying Resources (imgs/cfgs) ---"
+          cp -r imgs dist/
+          cp -r cfgs dist/
+
+          echo "--- 4. Reducing Size (Stripping Symbols) ---"
           strip dist/*.exe
           strip dist/*.dll
           strip dist/platforms/*.dll || true
@@ -148,27 +165,34 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-          
-      - name: Zip Artifacts
+
+      - name: Package Releases
         run: |
-          cd artifacts
-          # Zip macOS binaries
-          if [ -d "auto-wechat-macos-arm64" ]; then
-            zip -r auto-wechat-macos.zip auto-wechat-macos-arm64/*
-          elif [ -f "auto-wechat-macos-arm64" ]; then
-            zip -r auto-wechat-macos.zip auto-wechat-macos-arm64
-          fi
-          
-          # Zip Windows binaries
-          if [ -d "auto-wechat-windows" ]; then
-            zip -r auto-wechat-windows.zip auto-wechat-windows/*
-          fi
-          
+          # 1. Package Windows
+          # Create a nice internal folder structure for the zip
+          mkdir -p package_win/auto-wechat-windows
+          # Copy artifact content (exe, dlls, imgs, cfgs) into that folder
+          cp -r artifacts/auto-wechat-windows/* package_win/auto-wechat-windows/
+          # Zip it
+          cd package_win
+          zip -r ../auto-wechat-windows.zip auto-wechat-windows
+          cd ..
+
+          # 2. Package macOS
+          mkdir -p package_mac/auto-wechat-macos
+          # Copy artifact content (binary, imgs, cfgs)
+          cp -r artifacts/auto-wechat-macos-arm64/* package_mac/auto-wechat-macos/
+          # Ensure binary is executable
+          chmod +x package_mac/auto-wechat-macos/auto-wechat-macos-arm64
+          # Zip it
+          cd package_mac
+          zip -r ../auto-wechat-macos-arm64.zip auto-wechat-macos
+          cd ..
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            artifacts/auto-wechat-macos.zip
-            artifacts/auto-wechat-windows.zip
+            auto-wechat-macos-arm64.zip
+            auto-wechat-windows.zip
           generate_release_notes: true
-          fail_on_unmatched_files: false
