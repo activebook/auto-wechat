@@ -76,12 +76,6 @@ jobs:
             mingw-w64-x86_64-gcc
             mingw-w64-x86_64-qt6-base
 
-      - name: Verify OpenCV Installation
-        shell: msys2 {0}
-        run: |
-          pkg-config --cflags --libs opencv4
-          ls -la /mingw64/include/opencv4/opencv2/ || echo "OpenCV2 headers not found in /mingw64/include/opencv4/opencv2/"
-
       - name: Build Windows Binary
         shell: msys2 {0}
         run: |
@@ -89,27 +83,50 @@ jobs:
           export PKG_CONFIG_PATH=/mingw64/lib/pkgconfig:$PKG_CONFIG_PATH
           export CPATH=/mingw64/include/opencv4:/mingw64/include:$CPATH
           export LIBRARY_PATH=/mingw64/lib:$LIBRARY_PATH
-          export CGO_CFLAGS="$(pkg-config --cflags opencv4)"
-          export CGO_CXXFLAGS="$(pkg-config --cflags opencv4)"
-          export CGO_LDFLAGS="$(pkg-config --libs opencv4)"
-          go build -tags customenv -v -o auto-wechat-windows.exe main.go
+          
+          # Build with standard flags
+          go build -tags customenv -v -ldflags="-s -w" -o auto-wechat-windows.exe main.go
 
-      - name: Collect Windows DLLs
+      - name: Collect Dependencies (Smart Mode)
         shell: msys2 {0}
         run: |
           mkdir -p dist
-          cp auto-wechat-windows.exe dist/
+          mv auto-wechat-windows.exe dist/
 
-          # Use pacman's own dependency graph — authoritative, never misses a DLL.
-          # pactree lists all transitive runtime deps of opencv; pacman -Ql lists
-          # every file owned by those packages; we grab the .dll ones from /mingw64/bin/.
-          pactree -u mingw-w64-x86_64-opencv \
-            | xargs pacman -Ql \
-            | awk '/\/mingw64\/bin\/.*\.dll$/ { print $2 }' \
-            | xargs -I{} cp -n "{}" dist/
+          echo "--- 1. Copying Linked DLLs using ldd ---"
+          # This loops through the binary's dependencies and copies only what is actually linked.
+          # It filters for files in /mingw64/ to avoid copying Windows system files (kernel32, etc).
+          
+          ldd dist/auto-wechat-windows.exe | grep '/mingw64/' | awk '{print $3}' | sort | uniq | while read -r dll; do
+            echo "Copying $dll"
+            cp "$dll" dist/
+          done
 
-          echo "--- DLLs collected ---"
-          ls dist/
+          echo "--- 2. Copying Required Qt Plugins ---"
+          # OpenCV HighGUI with Qt backend REQUIRES the windows platform plugin.
+          # Without this, the app will run but fail to open a window.
+          
+          mkdir -p dist/platforms
+          # Location of qwindows.dll in MSYS2 Qt6 package
+          cp /mingw64/share/qt6/plugins/platforms/qwindows.dll dist/platforms/
+          
+          # Also check if qwindows.dll needs extra deps (rare, but safe to check)
+          ldd dist/platforms/qwindows.dll | grep '/mingw64/' | awk '{print $3}' | sort | uniq | while read -r dll; do
+             # Only copy if we don't have it yet
+             if [ ! -f "dist/$(basename $dll)" ]; then
+                echo "Copying extra Qt dep: $dll"
+                cp "$dll" dist/
+             fi
+          done
+
+          echo "--- 3. Reducing Size (Stripping Symbols) ---"
+          # Removes debug info from all DLLs and the EXE to save space
+          strip dist/*.exe
+          strip dist/*.dll
+          strip dist/platforms/*.dll
+
+          echo "--- Final Content ---"
+          ls -R dist/
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
