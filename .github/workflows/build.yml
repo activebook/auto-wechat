@@ -96,16 +96,28 @@ jobs:
         run: |
           mkdir -p dist
           cp auto-wechat-windows.exe dist/
-          # Collect OpenCV and MinGW dependencies
-          # We use ldd to find dependencies if possible, or just copy the common ones
-          cp /mingw64/bin/libopencv_world*.dll dist/ 2>/dev/null || cp /mingw64/bin/libopencv_*.dll dist/
-          cp /mingw64/bin/libwinpthread-1.dll dist/
-          cp /mingw64/bin/libgcc_s_seh-1.dll dist/
-          cp /mingw64/bin/libstdc++-6.dll dist/
-          # Add more if needed based on typical gocv requirements
-          cp /mingw64/bin/zlib1.dll dist/
-          cp /mingw64/bin/libtbb12.dll dist/
-          cp /mingw64/bin/libopenblas.dll dist/
+
+          # Dynamically resolve ALL transitive DLL dependencies (incl. Qt6, OpenCV, MinGW runtime)
+          # using ldd, then copy every DLL that lives under /mingw64/bin/.
+          ldd auto-wechat-windows.exe \
+            | awk '/\/mingw64\/bin\// { print $3 }' \
+            | xargs -I{} cp -n "{}" dist/
+
+          # Recursively chase second-order deps (Qt plugins, image-format DLLs, etc.)
+          # until no new DLLs are discovered.
+          changed=1
+          while [ "$changed" = "1" ]; do
+            changed=0
+            for dll in dist/*.dll; do
+              while IFS= read -r dep; do
+                base=$(basename "$dep")
+                if [ ! -f "dist/$base" ] && [ -f "/mingw64/bin/$base" ]; then
+                  cp "/mingw64/bin/$base" dist/
+                  changed=1
+                fi
+              done < <(ldd "$dll" 2>/dev/null | awk '/\/mingw64\/bin\// { print $3 }')
+            done
+          done
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
