@@ -22,7 +22,7 @@ func main() {
 	// test_screen()
 	// test_bitmap()
 	// test_opencv()
-	// test_opencv2()
+	test_opencv2()
 	// test_hook()
 	// test_win()
 
@@ -226,6 +226,7 @@ func test_opencv() {
 // 0.0  = no correlation
 // negative = inverse match
 func test_opencv2() {
+	robotgo.ActiveName("WeChat")
 	img, _ := robotgo.CaptureImg()
 	img1, format, _ := robotgo.DecodeImg("imgs/last_one.png")
 	fmt.Println("format: ", format)
