@@ -110,7 +110,7 @@ func RunAutomation() {
 		GotoLastContact()
 		end := GotoNextContact()
 		if end {
-			fmt.Println("End of contact list or checks failed.")
+			fmt.Println("End of contact list.")
 			break
 		}
 
@@ -144,7 +144,7 @@ func GotoLastContact() {
 
 	// Here we should clip out a small image based on current point
 	// For further checking whether the same contact is delt already or not
-	if settings.CheckLastOne {
+	if settings.CheckEnd {
 		captureContact()
 	}
 }
@@ -159,10 +159,10 @@ func GotoNextContact() bool {
 	fmt.Println("Press Down...")
 	PressDown()
 
-	// Check if state changed
-	if settings.CheckLastOne {
+	// Check if contact changed
+	if settings.CheckEnd {
 		if !checkContactChanged() {
-			fmt.Println("State did not change (End of list)")
+			fmt.Println("Contact did not change (End of list)")
 			end = true
 		}
 	}
@@ -204,16 +204,23 @@ func captureContact() {
 	// Assuming 100x40 is enough to see the contact name/avatar change
 	// Adjust offset to center the capture or ensuring it hits the list item
 	MoveTo(-100, -100) // hide cursor
-	lastContactImg, _ := robotgo.CaptureImg(x-50, y-20, 100, 40)
-	robotgo.Save(lastContactImg, "imgs/last_one.png")
+	captured, err := robotgo.CaptureImg(x-50, y-20, 100, 40)
+	if err != nil {
+		fmt.Printf("captureContact: capture failed: %v\n", err)
+		return
+	}
+	// Must save and reload to get correct image
+	robotgo.Save(captured, "imgs/last_one.png")
+	lastContactImg, _, _ = robotgo.DecodeImg("imgs/last_one.png")
+	// Get full screen image
 	img, _ := robotgo.CaptureImg()
-	robotgo.Save(img, "imgs/screen.png")
+	// robotgo.Save(img, "imgs/screen.png")
 	_, best_match, _, best_points := gcv.FindImg(lastContactImg, img)
-	if best_match > 0.8 {
+	if best_match > 0.9 {
 		lastContactPos = best_points
-		fmt.Printf("Last contact pos: %v\n", lastContactPos)
+		fmt.Printf("Last contact pos: %v [match:%0.3f]\n", lastContactPos, best_match)
 	} else {
-		fmt.Printf("Last contact not found: %f\n", best_match)
+		fmt.Errorf("Last contact not found: %f\n", best_match)
 	}
 }
 
@@ -229,7 +236,7 @@ func checkContactChanged() bool {
 
 	// Since we are capturing the exact same region, identical images should match near 1.0 (or > 0.99)
 	// Use 0.95 to account for minor rendering artifacts, or 0.99 for strictness.
-	isSame := bestMatch > 0.90
+	isSame := bestMatch > 0.9
 
 	if isSame && best_points == lastContactPos {
 		return false // No change
