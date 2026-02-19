@@ -194,10 +194,20 @@ jobs:
           zip -r ../auto-wechat-macos-arm64.zip auto-wechat-macos
           cd ..
 
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          PREV_TAG=$(git tag --sort=-version:refname | sed -n '2p')
+          CHANGELOG=$(git log ${PREV_TAG}..HEAD --pretty=format:"- %s" --no-merges)
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
+          body: ${{ steps.changelog.outputs.changelog }}
           files: |
             auto-wechat-macos-arm64.zip
             auto-wechat-windows.zip
-          generate_release_notes: true
+          # generate_release_notes: true

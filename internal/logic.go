@@ -150,6 +150,13 @@ func MoveRelative(x, y int, msg string) {
 	}
 }
 
+func Wait(msg string) {
+	robotgo.MilliSleep(settings.Interval)
+	if settings.Debug {
+		i18n.P.Printf("Wait: %s\n", msg)
+	}
+}
+
 func ActivateApp(msg string) error {
 	if runtime.GOOS == "darwin" {
 		err := robotgo.ActiveName(settings.AppTitle)
@@ -359,6 +366,9 @@ func SendMessage() {
 	// Go to Messages
 	MoveRelative(settings.MessagesPopup.MarginX, settings.MessagesPopup.MarginY, MsgMessagesPopup)
 	LeftClick(MsgMessagesPopup)
+
+	// Wait for the messages popup to appear
+	Wait(MsgMessagesPopup)
 
 	// Go to MessagesBar
 	MoveTo(settings.MessagesBar.X+settings.MessagesBar.MarginX, settings.MessagesBar.Y+settings.MessagesBar.MarginY, MsgMessagesBar)
