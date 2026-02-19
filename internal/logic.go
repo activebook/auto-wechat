@@ -24,6 +24,8 @@ var (
 // --- Utility Functions ---
 
 func init() {
+	runtime.LockOSThread()
+
 	robotgo.MouseSleep = 100 // add this at the start of your program
 	robotgo.KeySleep = 50
 }
@@ -46,7 +48,7 @@ func RightClick(msg string) {
 }
 
 func PressEsc(msg string) {
-	robotgo.KeyTap("esc")
+	robotgo.KeyTap(robotgo.Esc)
 	if settings.Debug {
 		fmt.Printf("Press Esc: %s\n", msg)
 		robotgo.MilliSleep(1000)
@@ -54,15 +56,37 @@ func PressEsc(msg string) {
 }
 
 func PressEnter(msg string) {
-	robotgo.KeyTap("enter")
+	robotgo.KeyTap(robotgo.Enter)
 	if settings.Debug {
 		fmt.Printf("Press Enter: %s\n", msg)
 		robotgo.MilliSleep(1000)
 	}
 }
 
+func PressCtrlA(msg string) {
+	if runtime.GOOS == "darwin" {
+		exec.Command("osascript", "-e",
+			`tell application "System Events" to keystroke "a" using {command down}`).Run()
+	} else {
+		robotgo.KeyTap(robotgo.KeyA, robotgo.CmdCtrl())
+	}
+	robotgo.MilliSleep(settings.Interval) // because Ctrl+A need time to response
+	if settings.Debug {
+		fmt.Printf("Press Ctrl+A: %s\n", msg)
+		robotgo.MilliSleep(1000)
+	}
+}
+
+func PressDelete(msg string) {
+	robotgo.KeyTap(robotgo.Delete)
+	if settings.Debug {
+		fmt.Printf("Press Delete: %s\n", msg)
+		robotgo.MilliSleep(1000)
+	}
+}
+
 func PressUp(msg string) {
-	robotgo.KeyTap("up")
+	robotgo.KeyTap(robotgo.Up)
 	if settings.Debug {
 		fmt.Printf("Press Up: %s\n", msg)
 		robotgo.MilliSleep(1000)
@@ -70,7 +94,7 @@ func PressUp(msg string) {
 }
 
 func PressDown(msg string) {
-	robotgo.KeyTap("down")
+	robotgo.KeyTap(robotgo.Down)
 	if settings.Debug {
 		fmt.Printf("Press Down: %s\n", msg)
 		robotgo.MilliSleep(1000)
@@ -212,6 +236,50 @@ func RunAutomation() {
 	fmt.Println("Automation sequence completed.")
 }
 
+func RunClear() {
+	// Read Settings
+	settings = ReadSettings()
+	if settings.Debug {
+		fmt.Printf("Loaded settings: %+v\n", settings)
+	}
+
+	// Check if imgs folder exists
+	appDir := GetAppDir()
+	imgsDir := filepath.Join(appDir, "imgs")
+	if _, err := os.Stat(imgsDir); os.IsNotExist(err) {
+		fmt.Printf("Images directory not found at: %s. Please make sure the 'imgs' folder is present.\n", imgsDir)
+		return
+	}
+
+	// Activate App
+	err := ActivateApp(MsgWeChat)
+	if err != nil {
+		fmt.Println("active app error: ", err)
+		fmt.Println("Please open WeChat app first.")
+		return
+	}
+
+	// Hook exit message
+	HookExit()
+
+	fmt.Println("Starting automation sequence...")
+
+	messages_sent = 0
+	for messages_sent < settings.MaxCount {
+		GotoLastContact()
+		end := GotoNextContact()
+		if end {
+			fmt.Println("Reach the end of contact list.")
+			break
+		}
+
+		ClearMessage()
+		messages_sent += 1
+	}
+
+	fmt.Println("Automation sequence completed.")
+}
+
 func GotoLastContact() {
 
 	// Go to Contacts
@@ -277,6 +345,26 @@ func SendMessage() {
 	}
 }
 
+func ClearMessage() {
+	// Go to More
+	MoveTo(settings.More.X+settings.More.MarginX, settings.More.Y+settings.More.MarginY, MsgMore)
+	RightClick(MsgLastContact) // Right Click
+
+	// Go to Messages
+	MoveRelative(settings.MessagesPopup.MarginX, settings.MessagesPopup.MarginY, MsgMessagesPopup)
+	LeftClick(MsgMessagesPopup)
+
+	// Go to MessagesBar
+	MoveTo(settings.MessagesBar.X+settings.MessagesBar.MarginX, settings.MessagesBar.Y+settings.MessagesBar.MarginY, MsgMessagesBar)
+	LeftClick(MsgMessagesInput)
+
+	// Press CtrlA
+	PressCtrlA(MsgMessagesInput)
+
+	// Press Delete
+	PressDelete(MsgMessagesInput)
+}
+
 // Helpers for checks
 
 func normalizeImage(src image.Image) image.Image {
@@ -295,7 +383,7 @@ func captureAppImage() image.Image {
 	MoveTo(-100, -100, MsgOutOfScreen) // hide cursor
 	captured, err := robotgo.CaptureImg(ax, ay, aw, ah)
 	if err != nil || captured == nil {
-		fmt.Printf("captureAppImage: capture failed: %v\n", err)
+		fmt.Printf("captureAppImage[%d, %d, %d, %d]: capture failed: %v\n", ax, ay, aw, ah, err)
 		return nil
 	}
 	// Must save and reload to get correct image

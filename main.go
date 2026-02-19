@@ -16,6 +16,7 @@ func main() {
 		fmt.Println("Subcommands:")
 		fmt.Println("  scan  - Scan for UI elements and save to settings.yml")
 		fmt.Println("  proc  - Run automation process based on settings.yml")
+		fmt.Println("  clear - Clear messages that input but not sent")
 		return
 	}
 
@@ -25,6 +26,8 @@ func main() {
 		internal.RunScanner()
 	case "proc":
 		internal.RunAutomation()
+	case "clear":
+		internal.RunClear()
 	default:
 		fmt.Println("Unknown subcommand:", subcmd)
 	}
