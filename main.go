@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/activebook/auto-wechat/internal"
+	"github.com/activebook/auto-wechat/internal/i18n"
 	// "github.com/activebook/auto-wechat/test"
 )
 
@@ -12,11 +12,11 @@ func main() {
 	// test.Test()
 
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: auto-wechat <subcommand>")
-		fmt.Println("Subcommands:")
-		fmt.Println("  scan  - Scan for UI elements and save to settings.yml")
-		fmt.Println("  proc  - Run automation process based on settings.yml")
-		fmt.Println("  clear - Clear messages that input but not sent")
+		i18n.P.Printf("Usage: auto-wechat <subcommand>\n")
+		i18n.P.Printf("Subcommands:\n")
+		i18n.P.Printf("  scan  - Scan for UI elements and save to settings.yml\n")
+		i18n.P.Printf("  proc  - Run automation process based on settings.yml\n")
+		i18n.P.Printf("  clear - Clear messages that input but not sent\n")
 		return
 	}
 
@@ -29,7 +29,7 @@ func main() {
 	case "clear":
 		internal.RunClear()
 	default:
-		fmt.Println("Unknown subcommand:", subcmd)
+		i18n.P.Printf("Unknown subcommand: %s\n", subcmd)
 	}
 
 }

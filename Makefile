@@ -29,6 +29,9 @@ test:
 fmt:
 	go fmt ./...
 
+upgrade:
+	go get -u ./...
+
 tidy:
 	go mod tidy
 

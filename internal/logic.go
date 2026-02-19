@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/activebook/auto-wechat/internal/i18n"
+
 	"github.com/go-vgo/robotgo"
 	hook "github.com/robotn/gohook"
 	"github.com/vcaesar/gcv"
@@ -33,7 +35,7 @@ func init() {
 func LeftClick(msg string) {
 	robotgo.Click("left")
 	if settings.Debug {
-		fmt.Printf("Left Click: %s\n", msg)
+		i18n.P.Printf("Left Click: %s\n", msg)
 		robotgo.MilliSleep(1000)
 	}
 }
@@ -42,7 +44,7 @@ func RightClick(msg string) {
 	robotgo.Click("right")
 	robotgo.MilliSleep(robotgo.MouseSleep) // because right click need time to response
 	if settings.Debug {
-		fmt.Printf("Right Click: %s\n", msg)
+		i18n.P.Printf("Right Click: %s\n", msg)
 		robotgo.MilliSleep(1000)
 	}
 }
@@ -50,7 +52,7 @@ func RightClick(msg string) {
 func PressEsc(msg string) {
 	robotgo.KeyTap(robotgo.Esc)
 	if settings.Debug {
-		fmt.Printf("Press Esc: %s\n", msg)
+		i18n.P.Printf("Press Esc: %s\n", msg)
 		robotgo.MilliSleep(1000)
 	}
 }
@@ -58,7 +60,7 @@ func PressEsc(msg string) {
 func PressEnter(msg string) {
 	robotgo.KeyTap(robotgo.Enter)
 	if settings.Debug {
-		fmt.Printf("Press Enter: %s\n", msg)
+		i18n.P.Printf("Press Enter: %s\n", msg)
 		robotgo.MilliSleep(1000)
 	}
 }
@@ -72,7 +74,7 @@ func PressCtrlA(msg string) {
 	}
 	robotgo.MilliSleep(settings.Interval) // because Ctrl+A need time to response
 	if settings.Debug {
-		fmt.Printf("Press Ctrl+A: %s\n", msg)
+		i18n.P.Printf("Press Ctrl+A: %s\n", msg)
 		robotgo.MilliSleep(1000)
 	}
 }
@@ -80,7 +82,7 @@ func PressCtrlA(msg string) {
 func PressDelete(msg string) {
 	robotgo.KeyTap(robotgo.Delete)
 	if settings.Debug {
-		fmt.Printf("Press Delete: %s\n", msg)
+		i18n.P.Printf("Press Delete: %s\n", msg)
 		robotgo.MilliSleep(1000)
 	}
 }
@@ -88,7 +90,7 @@ func PressDelete(msg string) {
 func PressUp(msg string) {
 	robotgo.KeyTap(robotgo.Up)
 	if settings.Debug {
-		fmt.Printf("Press Up: %s\n", msg)
+		i18n.P.Printf("Press Up: %s\n", msg)
 		robotgo.MilliSleep(1000)
 	}
 }
@@ -96,7 +98,7 @@ func PressUp(msg string) {
 func PressDown(msg string) {
 	robotgo.KeyTap(robotgo.Down)
 	if settings.Debug {
-		fmt.Printf("Press Down: %s\n", msg)
+		i18n.P.Printf("Press Down: %s\n", msg)
 		robotgo.MilliSleep(1000)
 	}
 }
@@ -113,7 +115,7 @@ func SetClipboard(text string) {
 // func PasteClipboard() {
 // 	err := robotgo.CmdV()
 // 	if err != nil {
-// 		fmt.Println("Error pasting clipboard:", err)
+// 		i18n.P.Println("Error pasting clipboard:", err)
 // 	}
 // }
 
@@ -126,7 +128,7 @@ func PasteClipboard(msg string) {
 	}
 	robotgo.MilliSleep(settings.Interval) // because paste need time to response
 	if settings.Debug {
-		fmt.Printf("Paste Clipboard: %s\n", msg)
+		i18n.P.Printf("Paste Clipboard: %s\n", msg)
 		robotgo.MilliSleep(1000)
 	}
 }
@@ -134,7 +136,7 @@ func PasteClipboard(msg string) {
 func MoveTo(x, y int, msg string) {
 	robotgo.Move(x, y)
 	if settings.Debug {
-		fmt.Printf("Move to (%d, %d): %s\n", x, y, msg)
+		i18n.P.Printf("Move to (%d, %d): %s\n", x, y, msg)
 		robotgo.MilliSleep(1000)
 	}
 
@@ -143,7 +145,7 @@ func MoveTo(x, y int, msg string) {
 func MoveRelative(x, y int, msg string) {
 	robotgo.MoveRelative(x, y)
 	if settings.Debug {
-		fmt.Printf("Move relative (%d, %d): %s\n", x, y, msg)
+		i18n.P.Printf("Move relative (%d, %d): %s\n", x, y, msg)
 		robotgo.MilliSleep(1000)
 	}
 }
@@ -151,15 +153,15 @@ func MoveRelative(x, y int, msg string) {
 func ActivateApp(msg string) error {
 	err := robotgo.ActiveName(settings.AppTitle)
 	if settings.Debug {
-		fmt.Printf("Active App: %s\n", msg)
+		i18n.P.Printf("Active App: %s\n", msg)
 	}
 	return err
 }
 
 func HookExit() {
-	fmt.Println("--- Please press ctrl + shift + q to stop ---")
+	i18n.P.Printf("--- Please press ctrl + shift + q to stop ---\n")
 	hook.Register(hook.KeyDown, []string{"q", "ctrl", "shift"}, func(e hook.Event) {
-		fmt.Println("Stopped.")
+		i18n.P.Printf("Stopped.\n")
 		hook.End()
 		os.Exit(0)
 	})
@@ -195,36 +197,36 @@ func RunAutomation() {
 	// Read Settings
 	settings = ReadSettings()
 	if settings.Debug {
-		fmt.Printf("Loaded settings: %+v\n", settings)
+		i18n.P.Printf("Loaded settings: %+v\n", settings)
 	}
 
 	// Check if imgs folder exists
 	appDir := GetAppDir()
 	imgsDir := filepath.Join(appDir, "imgs")
 	if _, err := os.Stat(imgsDir); os.IsNotExist(err) {
-		fmt.Printf("Images directory not found at: %s. Please make sure the 'imgs' folder is present.\n", imgsDir)
+		i18n.P.Printf("Images directory not found at: %s. Please make sure the 'imgs' folder is present.\n", imgsDir)
 		return
 	}
 
 	// Activate App
 	err := ActivateApp(MsgWeChat)
 	if err != nil {
-		fmt.Println("active app error: ", err)
-		fmt.Println("Please open WeChat app first.")
+		i18n.P.Printf("active app error: %v\n", err)
+		i18n.P.Printf("Please open WeChat app first.\n")
 		return
 	}
 
 	// Hook exit message
 	HookExit()
 
-	fmt.Println("Starting automation sequence...")
+	i18n.P.Printf("Starting automation sequence...\n")
 
 	messages_sent = 0
 	for messages_sent < settings.MaxCount {
 		GotoLastContact()
 		end := GotoNextContact()
 		if end {
-			fmt.Println("Reach the end of contact list.")
+			i18n.P.Printf("Reach the end of contact list.\n")
 			break
 		}
 
@@ -233,43 +235,43 @@ func RunAutomation() {
 		robotgo.MilliSleep(settings.Interval)
 	}
 
-	fmt.Println("Automation sequence completed.")
+	i18n.P.Printf("Automation sequence completed.\n")
 }
 
 func RunClear() {
 	// Read Settings
 	settings = ReadSettings()
 	if settings.Debug {
-		fmt.Printf("Loaded settings: %+v\n", settings)
+		i18n.P.Printf("Loaded settings: %+v\n", settings)
 	}
 
 	// Check if imgs folder exists
 	appDir := GetAppDir()
 	imgsDir := filepath.Join(appDir, "imgs")
 	if _, err := os.Stat(imgsDir); os.IsNotExist(err) {
-		fmt.Printf("Images directory not found at: %s. Please make sure the 'imgs' folder is present.\n", imgsDir)
+		i18n.P.Printf("Images directory not found at: %s. Please make sure the 'imgs' folder is present.\n", imgsDir)
 		return
 	}
 
 	// Activate App
 	err := ActivateApp(MsgWeChat)
 	if err != nil {
-		fmt.Println("active app error: ", err)
-		fmt.Println("Please open WeChat app first.")
+		i18n.P.Printf("active app error: %v\n", err)
+		i18n.P.Printf("Please open WeChat app first.\n")
 		return
 	}
 
 	// Hook exit message
 	HookExit()
 
-	fmt.Println("Starting automation sequence...")
+	i18n.P.Printf("Starting automation sequence...\n")
 
 	messages_sent = 0
 	for messages_sent < settings.MaxCount {
 		GotoLastContact()
 		end := GotoNextContact()
 		if end {
-			fmt.Println("Reach the end of contact list.")
+			i18n.P.Printf("Reach the end of contact list.\n")
 			break
 		}
 
@@ -277,7 +279,7 @@ func RunClear() {
 		messages_sent += 1
 	}
 
-	fmt.Println("Automation sequence completed.")
+	i18n.P.Printf("Automation sequence completed.\n")
 }
 
 func GotoLastContact() {
@@ -316,7 +318,7 @@ func GotoNextContact() bool {
 	// Check if contact changed
 	if settings.CheckEnd {
 		if !checkContactChanged() {
-			fmt.Println("Contact did not change (End of list)")
+			i18n.P.Printf("Contact did not change (End of list)\n")
 			end = true
 		}
 	}
@@ -377,13 +379,13 @@ func normalizeImage(src image.Image) image.Image {
 func captureAppImage() image.Image {
 	ax, ay, aw, ah, err := GetAppWindowBounds()
 	if err != nil {
-		fmt.Println("get app window bounds error: ", err)
+		i18n.P.Printf("get app window bounds error: %v\n", err)
 		return nil
 	}
 	MoveTo(-100, -100, MsgOutOfScreen) // hide cursor
 	captured, err := robotgo.CaptureImg(ax, ay, aw, ah)
 	if err != nil || captured == nil {
-		fmt.Printf("captureAppImage[%d, %d, %d, %d]: capture failed: %v\n", ax, ay, aw, ah, err)
+		i18n.P.Printf("captureAppImage[%d, %d, %d, %d]: capture failed: %v\n", ax, ay, aw, ah, err)
 		return nil
 	}
 	// Must save and reload to get correct image
@@ -405,7 +407,7 @@ func captureContact() {
 	MoveTo(-100, -100, MsgOutOfScreen) // hide cursor
 	captured, err := robotgo.CaptureImg(x-50, y-20, 100, 40)
 	if err != nil || captured == nil {
-		fmt.Printf("captureContact: capture failed: %v\n", err)
+		i18n.P.Printf("captureContact: capture failed: %v\n", err)
 		return
 	}
 	// Must save and reload to get correct image
@@ -423,10 +425,10 @@ func captureContact() {
 	if best_match > 0.9 {
 		lastContactPos = best_points
 		if settings.Debug {
-			fmt.Printf("Last contact pos: %v [match:%0.3f]\n", lastContactPos, best_match)
+			i18n.P.Printf("Last contact pos: %v [match:%0.3f]\n", lastContactPos, best_match)
 		}
 	} else {
-		fmt.Printf("Last contact not found: [match:%0.3f]\n", best_match)
+		i18n.P.Printf("Last contact not found: [match:%0.3f]\n", best_match)
 	}
 }
 

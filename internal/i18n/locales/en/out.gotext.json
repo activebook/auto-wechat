@@ -1,0 +1,518 @@
+{
+    "language": "en",
+    "messages": [
+        {
+            "id": "Usage: auto-wechat \u003csubcommand\u003e",
+            "message": "Usage: auto-wechat \u003csubcommand\u003e",
+            "translation": "Usage: auto-wechat \u003csubcommand\u003e",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Subcommands:",
+            "message": "Subcommands:",
+            "translation": "Subcommands:",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "scan  - Scan for UI elements and save to settings.yml",
+            "message": "scan  - Scan for UI elements and save to settings.yml",
+            "translation": "scan  - Scan for UI elements and save to settings.yml",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "proc  - Run automation process based on settings.yml",
+            "message": "proc  - Run automation process based on settings.yml",
+            "translation": "proc  - Run automation process based on settings.yml",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "clear - Clear messages that input but not sent",
+            "message": "clear - Clear messages that input but not sent",
+            "translation": "clear - Clear messages that input but not sent",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Unknown subcommand: {Subcmd}",
+            "message": "Unknown subcommand: {Subcmd}",
+            "translation": "Unknown subcommand: {Subcmd}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Subcmd",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "subcmd"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Left Click: {Msg}",
+            "message": "Left Click: {Msg}",
+            "translation": "Left Click: {Msg}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Right Click: {Msg}",
+            "message": "Right Click: {Msg}",
+            "translation": "Right Click: {Msg}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Press Esc: {Msg}",
+            "message": "Press Esc: {Msg}",
+            "translation": "Press Esc: {Msg}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Press Enter: {Msg}",
+            "message": "Press Enter: {Msg}",
+            "translation": "Press Enter: {Msg}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Press Ctrl+A: {Msg}",
+            "message": "Press Ctrl+A: {Msg}",
+            "translation": "Press Ctrl+A: {Msg}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Press Delete: {Msg}",
+            "message": "Press Delete: {Msg}",
+            "translation": "Press Delete: {Msg}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Press Up: {Msg}",
+            "message": "Press Up: {Msg}",
+            "translation": "Press Up: {Msg}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Press Down: {Msg}",
+            "message": "Press Down: {Msg}",
+            "translation": "Press Down: {Msg}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Paste Clipboard: {Msg}",
+            "message": "Paste Clipboard: {Msg}",
+            "translation": "Paste Clipboard: {Msg}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Move to ({X}, {Y}): {Msg}",
+            "message": "Move to ({X}, {Y}): {Msg}",
+            "translation": "Move to ({X}, {Y}): {Msg}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "X",
+                    "string": "%[1]d",
+                    "type": "int",
+                    "underlyingType": "int",
+                    "argNum": 1,
+                    "expr": "x"
+                },
+                {
+                    "id": "Y",
+                    "string": "%[2]d",
+                    "type": "int",
+                    "underlyingType": "int",
+                    "argNum": 2,
+                    "expr": "y"
+                },
+                {
+                    "id": "Msg",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "msg"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Move relative ({X}, {Y}): {Msg}",
+            "message": "Move relative ({X}, {Y}): {Msg}",
+            "translation": "Move relative ({X}, {Y}): {Msg}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "X",
+                    "string": "%[1]d",
+                    "type": "int",
+                    "underlyingType": "int",
+                    "argNum": 1,
+                    "expr": "x"
+                },
+                {
+                    "id": "Y",
+                    "string": "%[2]d",
+                    "type": "int",
+                    "underlyingType": "int",
+                    "argNum": 2,
+                    "expr": "y"
+                },
+                {
+                    "id": "Msg",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "msg"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Active App: {Msg}",
+            "message": "Active App: {Msg}",
+            "translation": "Active App: {Msg}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "--- Please press ctrl + shift + q to stop ---",
+            "message": "--- Please press ctrl + shift + q to stop ---",
+            "translation": "--- Please press ctrl + shift + q to stop ---",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Stopped.",
+            "message": "Stopped.",
+            "translation": "Stopped.",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Loaded settings: {Settings}",
+            "message": "Loaded settings: {Settings}",
+            "translation": "Loaded settings: {Settings}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Settings",
+                    "string": "%+[1]v",
+                    "type": "github.com/activebook/auto-wechat/internal.Settings",
+                    "underlyingType": "struct{Contacts github.com/activebook/auto-wechat/internal.Point \"yaml:\\\"contacts\\\"\"; More github.com/activebook/auto-wechat/internal.Point \"yaml:\\\"more\\\"\"; MessagesBar github.com/activebook/auto-wechat/internal.Point \"yaml:\\\"messages_bar\\\"\"; MessagesPopup github.com/activebook/auto-wechat/internal.Point \"yaml:\\\"messages_popup\\\"\"; AppTitle string \"yaml:\\\"app_title\\\"\"; Interval int \"yaml:\\\"interval\\\"\"; MaxCount int \"yaml:\\\"max_count\\\"\"; CheckEnd bool \"yaml:\\\"check_end\\\"\"; AutoSend bool \"yaml:\\\"auto_send\\\"\"; Debug bool \"yaml:\\\"debug\\\"\"}",
+                    "argNum": 1,
+                    "expr": "settings"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Images directory not found at: {ImgsDir}. Please make sure the 'imgs' folder is present.",
+            "message": "Images directory not found at: {ImgsDir}. Please make sure the 'imgs' folder is present.",
+            "translation": "Images directory not found at: {ImgsDir}. Please make sure the 'imgs' folder is present.",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "ImgsDir",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "imgsDir"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "active app error: {Err}",
+            "message": "active app error: {Err}",
+            "translation": "active app error: {Err}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Err",
+                    "string": "%[1]v",
+                    "type": "error",
+                    "underlyingType": "interface{Error() string}",
+                    "argNum": 1,
+                    "expr": "err"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Please open WeChat app first.",
+            "message": "Please open WeChat app first.",
+            "translation": "Please open WeChat app first.",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Starting automation sequence...",
+            "message": "Starting automation sequence...",
+            "translation": "Starting automation sequence...",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Reach the end of contact list.",
+            "message": "Reach the end of contact list.",
+            "translation": "Reach the end of contact list.",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Automation sequence completed.",
+            "message": "Automation sequence completed.",
+            "translation": "Automation sequence completed.",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "Contact did not change (End of list)",
+            "message": "Contact did not change (End of list)",
+            "translation": "Contact did not change (End of list)",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "get app window bounds error: {Err}",
+            "message": "get app window bounds error: {Err}",
+            "translation": "get app window bounds error: {Err}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Err",
+                    "string": "%[1]v",
+                    "type": "error",
+                    "underlyingType": "interface{Error() string}",
+                    "argNum": 1,
+                    "expr": "err"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "captureAppImage[{Ax}, {Ay}, {Aw}, {Ah}]: capture failed: {Err}",
+            "message": "captureAppImage[{Ax}, {Ay}, {Aw}, {Ah}]: capture failed: {Err}",
+            "translation": "captureAppImage[{Ax}, {Ay}, {Aw}, {Ah}]: capture failed: {Err}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Ax",
+                    "string": "%[1]d",
+                    "type": "int",
+                    "underlyingType": "int",
+                    "argNum": 1,
+                    "expr": "ax"
+                },
+                {
+                    "id": "Ay",
+                    "string": "%[2]d",
+                    "type": "int",
+                    "underlyingType": "int",
+                    "argNum": 2,
+                    "expr": "ay"
+                },
+                {
+                    "id": "Aw",
+                    "string": "%[3]d",
+                    "type": "int",
+                    "underlyingType": "int",
+                    "argNum": 3,
+                    "expr": "aw"
+                },
+                {
+                    "id": "Ah",
+                    "string": "%[4]d",
+                    "type": "int",
+                    "underlyingType": "int",
+                    "argNum": 4,
+                    "expr": "ah"
+                },
+                {
+                    "id": "Err",
+                    "string": "%[5]v",
+                    "type": "error",
+                    "underlyingType": "interface{Error() string}",
+                    "argNum": 5,
+                    "expr": "err"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "captureContact: capture failed: {Err}",
+            "message": "captureContact: capture failed: {Err}",
+            "translation": "captureContact: capture failed: {Err}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Err",
+                    "string": "%[1]v",
+                    "type": "error",
+                    "underlyingType": "interface{Error() string}",
+                    "argNum": 1,
+                    "expr": "err"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Last contact pos: {LastContactPos} [match:{Bestmatch}]",
+            "message": "Last contact pos: {LastContactPos} [match:{Bestmatch}]",
+            "translation": "Last contact pos: {LastContactPos} [match:{Bestmatch}]",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "LastContactPos",
+                    "string": "%[1]v",
+                    "type": "image.Point",
+                    "underlyingType": "struct{X int; Y int}",
+                    "argNum": 1,
+                    "expr": "lastContactPos"
+                },
+                {
+                    "id": "Bestmatch",
+                    "string": "%0.3[2]f",
+                    "type": "float32",
+                    "underlyingType": "float32",
+                    "argNum": 2,
+                    "expr": "best_match"
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Last contact not found: [match:{Bestmatch}]",
+            "message": "Last contact not found: [match:{Bestmatch}]",
+            "translation": "Last contact not found: [match:{Bestmatch}]",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Bestmatch",
+                    "string": "%0.3[1]f",
+                    "type": "float32",
+                    "underlyingType": "float32",
+                    "argNum": 1,
+                    "expr": "best_match"
+                }
+            ],
+            "fuzzy": true
+        }
+    ]
+}

@@ -1,0 +1,452 @@
+{
+    "language": "zh",
+    "messages": [
+        {
+            "id": "Usage: auto-wechat \u003csubcommand\u003e",
+            "message": "Usage: auto-wechat \u003csubcommand\u003e",
+            "translation": "用法: auto-wechat \u003c子命令\u003e"
+        },
+        {
+            "id": "Subcommands:",
+            "message": "Subcommands:",
+            "translation": "子命令:"
+        },
+        {
+            "id": "scan  - Scan for UI elements and save to settings.yml",
+            "message": "scan  - Scan for UI elements and save to settings.yml",
+            "translation": "scan  - 扫描 UI 元素并保存到 settings.yml"
+        },
+        {
+            "id": "proc  - Run automation process based on settings.yml",
+            "message": "proc  - Run automation process based on settings.yml",
+            "translation": "proc  - 基于 settings.yml 运行自动化流程"
+        },
+        {
+            "id": "clear - Clear messages that input but not sent",
+            "message": "clear - Clear messages that input but not sent",
+            "translation": "clear - 清除已输入但未发送的消息"
+        },
+        {
+            "id": "Unknown subcommand: {Subcmd}",
+            "message": "Unknown subcommand: {Subcmd}",
+            "translation": "未知子命令: {Subcmd}",
+            "placeholders": [
+                {
+                    "id": "Subcmd",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "subcmd"
+                }
+            ]
+        },
+        {
+            "id": "Left Click: {Msg}",
+            "message": "Left Click: {Msg}",
+            "translation": "左键点击: {Msg}",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ]
+        },
+        {
+            "id": "Right Click: {Msg}",
+            "message": "Right Click: {Msg}",
+            "translation": "右键点击: {Msg}",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ]
+        },
+        {
+            "id": "Press Esc: {Msg}",
+            "message": "Press Esc: {Msg}",
+            "translation": "按下 Esc: {Msg}",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ]
+        },
+        {
+            "id": "Press Enter: {Msg}",
+            "message": "Press Enter: {Msg}",
+            "translation": "按下 Enter: {Msg}",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ]
+        },
+        {
+            "id": "Press Ctrl+A: {Msg}",
+            "message": "Press Ctrl+A: {Msg}",
+            "translation": "按下 Ctrl+A: {Msg}",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ]
+        },
+        {
+            "id": "Press Delete: {Msg}",
+            "message": "Press Delete: {Msg}",
+            "translation": "按下 Delete: {Msg}",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ]
+        },
+        {
+            "id": "Press Up: {Msg}",
+            "message": "Press Up: {Msg}",
+            "translation": "按下 Up: {Msg}",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ]
+        },
+        {
+            "id": "Press Down: {Msg}",
+            "message": "Press Down: {Msg}",
+            "translation": "按下 Down: {Msg}",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ]
+        },
+        {
+            "id": "Paste Clipboard: {Msg}",
+            "message": "Paste Clipboard: {Msg}",
+            "translation": "粘贴剪贴板: {Msg}",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ]
+        },
+        {
+            "id": "Move to ({X}, {Y}): {Msg}",
+            "message": "Move to ({X}, {Y}): {Msg}",
+            "translation": "移动到 ({X}, {Y}): {Msg}",
+            "placeholders": [
+                {
+                    "id": "X",
+                    "string": "%[1]d",
+                    "type": "int",
+                    "underlyingType": "int",
+                    "argNum": 1,
+                    "expr": "x"
+                },
+                {
+                    "id": "Y",
+                    "string": "%[2]d",
+                    "type": "int",
+                    "underlyingType": "int",
+                    "argNum": 2,
+                    "expr": "y"
+                },
+                {
+                    "id": "Msg",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "msg"
+                }
+            ]
+        },
+        {
+            "id": "Move relative ({X}, {Y}): {Msg}",
+            "message": "Move relative ({X}, {Y}): {Msg}",
+            "translation": "相对移动 ({X}, {Y}): {Msg}",
+            "placeholders": [
+                {
+                    "id": "X",
+                    "string": "%[1]d",
+                    "type": "int",
+                    "underlyingType": "int",
+                    "argNum": 1,
+                    "expr": "x"
+                },
+                {
+                    "id": "Y",
+                    "string": "%[2]d",
+                    "type": "int",
+                    "underlyingType": "int",
+                    "argNum": 2,
+                    "expr": "y"
+                },
+                {
+                    "id": "Msg",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "msg"
+                }
+            ]
+        },
+        {
+            "id": "Active App: {Msg}",
+            "message": "Active App: {Msg}",
+            "translation": "激活应用: {Msg}",
+            "placeholders": [
+                {
+                    "id": "Msg",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "msg"
+                }
+            ]
+        },
+        {
+            "id": "--- Please press ctrl + shift + q to stop ---",
+            "message": "--- Please press ctrl + shift + q to stop ---",
+            "translation": "--- 请按 ctrl + shift + q 停止 ---"
+        },
+        {
+            "id": "Stopped.",
+            "message": "Stopped.",
+            "translation": "已停止。"
+        },
+        {
+            "id": "Loaded settings: {Settings}",
+            "message": "Loaded settings: {Settings}",
+            "translation": "已加载设置: {Settings}",
+            "placeholders": [
+                {
+                    "id": "Settings",
+                    "string": "%+[1]v",
+                    "type": "github.com/activebook/auto-wechat/internal.Settings",
+                    "underlyingType": "struct{Contacts github.com/activebook/auto-wechat/internal.Point \"yaml:\\\"contacts\\\"\"; More github.com/activebook/auto-wechat/internal.Point \"yaml:\\\"more\\\"\"; MessagesBar github.com/activebook/auto-wechat/internal.Point \"yaml:\\\"messages_bar\\\"\"; MessagesPopup github.com/activebook/auto-wechat/internal.Point \"yaml:\\\"messages_popup\\\"\"; AppTitle string \"yaml:\\\"app_title\\\"\"; Interval int \"yaml:\\\"interval\\\"\"; MaxCount int \"yaml:\\\"max_count\\\"\"; CheckEnd bool \"yaml:\\\"check_end\\\"\"; AutoSend bool \"yaml:\\\"auto_send\\\"\"; Debug bool \"yaml:\\\"debug\\\"\"}",
+                    "argNum": 1,
+                    "expr": "settings"
+                }
+            ]
+        },
+        {
+            "id": "Images directory not found at: {ImgsDir}. Please make sure the 'imgs' folder is present.",
+            "message": "Images directory not found at: {ImgsDir}. Please make sure the 'imgs' folder is present.",
+            "translation": "在 {ImgsDir} 未找到图片目录。请确保 'imgs' 文件夹存在。",
+            "placeholders": [
+                {
+                    "id": "ImgsDir",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "imgsDir"
+                }
+            ]
+        },
+        {
+            "id": "active app error: {Err}",
+            "message": "active app error: {Err}",
+            "translation": "激活应用错误: {Err}",
+            "placeholders": [
+                {
+                    "id": "Err",
+                    "string": "%[1]v",
+                    "type": "error",
+                    "underlyingType": "interface{Error() string}",
+                    "argNum": 1,
+                    "expr": "err"
+                }
+            ]
+        },
+        {
+            "id": "Please open WeChat app first.",
+            "message": "Please open WeChat app first.",
+            "translation": "请先打开微信应用。"
+        },
+        {
+            "id": "Starting automation sequence...",
+            "message": "Starting automation sequence...",
+            "translation": "开始自动化流程..."
+        },
+        {
+            "id": "Reach the end of contact list.",
+            "message": "Reach the end of contact list.",
+            "translation": "到达联系人列表末尾。"
+        },
+        {
+            "id": "Automation sequence completed.",
+            "message": "Automation sequence completed.",
+            "translation": "自动化流程已完成。"
+        },
+        {
+            "id": "Contact did not change (End of list)",
+            "message": "Contact did not change (End of list)",
+            "translation": "联系人未变化 (列表末尾)"
+        },
+        {
+            "id": "get app window bounds error: {Err}",
+            "message": "get app window bounds error: {Err}",
+            "translation": "获取应用窗口边界错误: {Err}",
+            "placeholders": [
+                {
+                    "id": "Err",
+                    "string": "%[1]v",
+                    "type": "error",
+                    "underlyingType": "interface{Error() string}",
+                    "argNum": 1,
+                    "expr": "err"
+                }
+            ]
+        },
+        {
+            "id": "captureAppImage[{Ax}, {Ay}, {Aw}, {Ah}]: capture failed: {Err}",
+            "message": "captureAppImage[{Ax}, {Ay}, {Aw}, {Ah}]: capture failed: {Err}",
+            "translation": "captureAppImage[{Ax}, {Ay}, {Aw}, {Ah}]: 截图失败: {Err}",
+            "placeholders": [
+                {
+                    "id": "Ax",
+                    "string": "%[1]d",
+                    "type": "int",
+                    "underlyingType": "int",
+                    "argNum": 1,
+                    "expr": "ax"
+                },
+                {
+                    "id": "Ay",
+                    "string": "%[2]d",
+                    "type": "int",
+                    "underlyingType": "int",
+                    "argNum": 2,
+                    "expr": "ay"
+                },
+                {
+                    "id": "Aw",
+                    "string": "%[3]d",
+                    "type": "int",
+                    "underlyingType": "int",
+                    "argNum": 3,
+                    "expr": "aw"
+                },
+                {
+                    "id": "Ah",
+                    "string": "%[4]d",
+                    "type": "int",
+                    "underlyingType": "int",
+                    "argNum": 4,
+                    "expr": "ah"
+                },
+                {
+                    "id": "Err",
+                    "string": "%[5]v",
+                    "type": "error",
+                    "underlyingType": "interface{Error() string}",
+                    "argNum": 5,
+                    "expr": "err"
+                }
+            ]
+        },
+        {
+            "id": "captureContact: capture failed: {Err}",
+            "message": "captureContact: capture failed: {Err}",
+            "translation": "captureContact: 截图失败: {Err}",
+            "placeholders": [
+                {
+                    "id": "Err",
+                    "string": "%[1]v",
+                    "type": "error",
+                    "underlyingType": "interface{Error() string}",
+                    "argNum": 1,
+                    "expr": "err"
+                }
+            ]
+        },
+        {
+            "id": "Last contact pos: {LastContactPos} [match:{Bestmatch}]",
+            "message": "Last contact pos: {LastContactPos} [match:{Bestmatch}]",
+            "translation": "最后联系人位置: {LastContactPos} [匹配度:{Bestmatch}]",
+            "placeholders": [
+                {
+                    "id": "LastContactPos",
+                    "string": "%[1]v",
+                    "type": "image.Point",
+                    "underlyingType": "struct{X int; Y int}",
+                    "argNum": 1,
+                    "expr": "lastContactPos"
+                },
+                {
+                    "id": "Bestmatch",
+                    "string": "%0.3[2]f",
+                    "type": "float32",
+                    "underlyingType": "float32",
+                    "argNum": 2,
+                    "expr": "best_match"
+                }
+            ]
+        },
+        {
+            "id": "Last contact not found: [match:{Bestmatch}]",
+            "message": "Last contact not found: [match:{Bestmatch}]",
+            "translation": "未找到最后联系人: [匹配度:{Bestmatch}]",
+            "placeholders": [
+                {
+                    "id": "Bestmatch",
+                    "string": "%0.3[1]f",
+                    "type": "float32",
+                    "underlyingType": "float32",
+                    "argNum": 1,
+                    "expr": "best_match"
+                }
+            ]
+        }
+    ]
+}
