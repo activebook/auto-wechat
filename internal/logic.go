@@ -170,7 +170,7 @@ func ActivateApp(msg string) error {
 		// Check whether pid has window
 		_, _, width, height := robotgo.GetBounds(pid)
 		if width > 0 && height > 0 {
-			robotgo.ActivePid(pid)
+			return robotgo.ActivePid(pid)
 		}
 	}
 
