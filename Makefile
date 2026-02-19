@@ -17,24 +17,46 @@ DIST_DIR := dist
 
 # ─── Development ─────────────────────────────────────────────────────────────
 
+## build: compile the project
 build:
 	CGO_ENABLED=1 go build -ldflags "$(LDFLAGS)" -o $(BINARY_NAME) main.go
 
+## run: build and execute the binary
 run: build
 	./$(BINARY_NAME)
 
+## test: run unit tests
 test:
 	go test ./...
 
+## fmt: format the source code
 fmt:
 	go fmt ./...
 
+## tag: create and push a git tag (usage: make tag v=v1.0.0)
+tag:
+	@if [ -z "$(v)" ]; then \
+		LATEST=$$(git ls-remote --tags --refs origin | awk -F/ '{print $$NF}' | sort -V | tail -n 1); \
+		if [ -z "$$LATEST" ]; then LATEST="v0.0.0"; fi; \
+		echo "Latest remote tag: $$LATEST"; \
+		NEXT=$$(echo $$LATEST | awk -F. '{print $$1"."$$2"."$$3+1}'); \
+		echo "Suggested version: $$NEXT"; \
+		echo "Usage: make tag v=$$NEXT"; \
+		exit 0; \
+	fi; \
+	git tag $(v); \
+	git push origin $(v)
+
+# 
+## upgrade: update dependencies to the latest versions
 upgrade:
 	go get -u ./...
 
+## tidy: clean up and synchronize dependencies
 tidy:
 	go mod tidy
 
+## clean: remove build artifacts and distributions
 clean:
 	go clean
 	rm -f $(BINARY_NAME)

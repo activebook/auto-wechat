@@ -377,16 +377,30 @@ func normalizeImage(src image.Image) image.Image {
 }
 
 func captureAppImage() image.Image {
+	foundApp := true
 	ax, ay, aw, ah, err := GetAppWindowBounds()
 	if err != nil {
 		i18n.P.Printf("get app window bounds error: %v\n", err)
-		return nil
+		foundApp = false
 	}
 	MoveTo(-100, -100, MsgOutOfScreen) // hide cursor
-	captured, err := robotgo.CaptureImg(ax, ay, aw, ah)
-	if err != nil || captured == nil {
-		i18n.P.Printf("captureAppImage[%d, %d, %d, %d]: capture failed: %v\n", ax, ay, aw, ah, err)
-		return nil
+
+	var captured image.Image
+	// capture app image
+	if foundApp {
+		captured, err = robotgo.CaptureImg(ax, ay, aw, ah)
+		if err != nil {
+			i18n.P.Printf("captureAppImage[%d, %d, %d, %d]: capture failed: %v\n", ax, ay, aw, ah, err)
+		}
+	}
+
+	// cannot find app then capture screen
+	if captured == nil {
+		captured, err = robotgo.CaptureImg()
+		if err != nil || captured == nil {
+			i18n.P.Printf("capture screen error: %v\n", err)
+			return nil
+		}
 	}
 	// Must save and reload to get correct image
 	// robotgo.Save(captured, "imgs/app.png")
@@ -421,6 +435,9 @@ func captureContact() {
 
 	// Get App Image and find contact inside it
 	appImg := captureAppImage()
+	if appImg == nil {
+		return
+	}
 	_, best_match, _, best_points := gcv.FindImg(lastContactImg, appImg)
 	if best_match > 0.9 {
 		lastContactPos = best_points
@@ -432,6 +449,7 @@ func captureContact() {
 	}
 }
 
+// Check whether the last contact is changed or not
 func checkContactChanged() bool {
 	if lastContactImg == nil {
 		return true
@@ -440,6 +458,9 @@ func checkContactChanged() bool {
 	// Using gcv.FindImg with high threshold to check equality
 	// If FindImg returns a very high match, they are the same.
 	appImg := captureAppImage()
+	if appImg == nil {
+		return true
+	}
 	_, bestMatch, _, best_points := gcv.FindImg(lastContactImg, appImg)
 
 	// Since we are capturing the exact same region, identical images should match near 1.0 (or > 0.99)
