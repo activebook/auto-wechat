@@ -168,8 +168,9 @@ func ActivateApp(msg string) error {
 
 	for _, pid := range pids {
 		// Check whether pid has window
-		_, _, width, height := robotgo.GetBounds(pid)
+		x, y, width, height := robotgo.GetBounds(pid)
 		if width > 0 && height > 0 {
+			i18n.P.Printf("Found app %s(%d) at [%d, %d, %d, %d]\n", settings.AppTitle, pid, x, y, width, height)
 			return robotgo.ActivePid(pid)
 		}
 	}
