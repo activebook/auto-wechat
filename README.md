@@ -9,11 +9,13 @@ The tool operates in two phases:
 
 ```
 scan  →  calibrate UI element positions  →  cfgs/settings.yml
-proc  →  iterate contacts & send message
+proc  →  iterate contacts & send message (from clipboard)
+clear →  iterate contacts & clear unsent input messages
 ```
 
-1. **`scan`** — Auto scan each WeChat UI element (Contacts button, More button, Messages bar), and record the screen coordinates into `cfgs/settings.yml`.
-2. **`proc`** — Reads `settings.yml`, activates WeChat, then loops through the contact list:
+1. **`scan`**  — Auto scan each WeChat UI element (Contacts button, More button, Messages bar), and record the screen coordinates into `cfgs/settings.yml`.
+2. **`proc`**  — Reads `settings.yml`, activates WeChat, then loops through the contact list to send clipboard messages.
+3. **`clear`** — Reads `settings.yml`, then loops through the contact list to select and delete any messages in the input area that haven't been sent.
    - Navigates to the last visited contact.
    - Presses ↓ to advance to the next contact.
    - Right-clicks → "Send Message" → pastes the clipboard content → (optionally) hits Enter.
@@ -44,6 +46,9 @@ make build
 
 # 3. Copy your message to the clipboard, then run
 ./auto-wechat proc
+
+# 4. Or clear unsent input messages
+./auto-wechat clear
 ```
 
 ## Configuration — `cfgs/settings.yml`
