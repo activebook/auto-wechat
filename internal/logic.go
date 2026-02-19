@@ -151,11 +151,30 @@ func MoveRelative(x, y int, msg string) {
 }
 
 func ActivateApp(msg string) error {
-	err := robotgo.ActiveName(settings.AppTitle)
-	if settings.Debug {
-		i18n.P.Printf("Active App: %s\n", msg)
+	if runtime.GOOS == "darwin" {
+		err := robotgo.ActiveName(settings.AppTitle)
+		if settings.Debug {
+			i18n.P.Printf("Active App: %s\n", msg)
+		}
+		return err
 	}
-	return err
+
+	// Windows platform
+	// One title cannot have multi ids
+	pids, err := robotgo.FindIds(settings.AppTitle)
+	if err != nil || len(pids) == 0 {
+		return fmt.Errorf("%s not found", settings.AppTitle)
+	}
+
+	for _, pid := range pids {
+		// Check whether pid has window
+		_, _, width, height := robotgo.GetBounds(pid)
+		if width > 0 && height > 0 {
+			robotgo.ActivePid(pid)
+		}
+	}
+
+	return fmt.Errorf("%s not found", settings.AppTitle)
 }
 
 func HookExit() {
@@ -176,8 +195,14 @@ func GetAppWindowBounds() (x, y, width, height int, err error) {
 		return 0, 0, 0, 0, fmt.Errorf("%s not found", settings.AppTitle)
 	}
 
-	x, y, width, height = robotgo.GetBounds(pids[0])
-	return x, y, width, height, nil
+	for _, pid := range pids {
+		x, y, width, height = robotgo.GetBounds(pid)
+		if width > 0 && height > 0 {
+			return x, y, width, height, nil
+		}
+	}
+
+	return 0, 0, 0, 0, fmt.Errorf("%s not found", settings.AppTitle)
 }
 
 const (
