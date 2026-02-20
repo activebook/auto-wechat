@@ -13,7 +13,7 @@ proc  →  iterate contacts & send message (from clipboard)
 clear →  iterate contacts & clear unsent input messages
 ```
 
-1. **`scan`**  — Auto scan each WeChat UI element (Contacts button, More button, Messages bar), and record the screen coordinates into `cfgs/settings.yml`.
+1. **`scan`**  — Auto scan each WeChat UI element (Contacts button, More button, Messages bar, and Messages Popup menu), and record the screen coordinates into `cfgs/settings.yml`.
 2. **`proc`**  — Reads `settings.yml`, activates WeChat, then loops through the contact list to send clipboard messages.
 3. **`clear`** — Reads `settings.yml`, then loops through the contact list to select and delete any messages in the input area that haven't been sent.
    - Navigates to the last visited contact.
@@ -28,12 +28,17 @@ clear →  iterate contacts & clear unsent input messages
 | Dependency | Notes |
 |---|---|
 | [Go](https://go.dev/doc/install) ≥ 1.24 | Build toolchain |
-| [OpenCV 4](https://opencv.org/) | Image matching — `brew install opencv` on macOS |
+| [OpenCV 4](https://opencv.org/) | Required for image matching — `brew install opencv` on macOS |
 | [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/) | Required by gocv — `brew install pkg-config` |
 
-On **macOS** you must also grant the terminal (or the binary) **Accessibility** and **Screen Recording** permissions in *System Settings → Privacy & Security*.
+### Platform Notes
+
+- **macOS**: The project includes a `run.sh` launcher that automatically verifies these dependencies and provides installation prompts if they are missing. You must also grant the terminal (or the binary) **Accessibility** and **Screen Recording** permissions in *System Settings → Privacy & Security*.
+- **Windows**: The release version is fully portable and self-contained. All necessary `.dll` files are bundled in the distribution folder, so no manual OpenCV installation is required.
 
 ## Quick start
+
+On macOS, it is highly recommended to use the `./run.sh` launcher, which handles library verification.
 
 ```bash
 # 1. Clone and build
@@ -42,13 +47,13 @@ cd auto-wechat
 make build
 
 # 2. Calibrate UI positions (follow on-screen prompts)
-./auto-wechat scan
+./run.sh scan
 
 # 3. Copy your message to the clipboard, then run
-./auto-wechat proc
+./run.sh proc
 
 # 4. Or clear unsent input messages
-./auto-wechat clear
+./run.sh clear
 ```
 
 ## Configuration — `cfgs/settings.yml`
@@ -85,10 +90,14 @@ make build        # dev build → ./auto-wechat
 make release      # versioned build + assets → dist/<name>.zip
 make test         # go test ./...
 make fmt          # go fmt ./...
+make tag          # create and push a git tag (usage: make tag v=v1.0.0)
+make upgrade      # upgrade dependencies to the latest versions
 make tidy         # go mod tidy
 make clean        # remove binary and dist/
 make help         # list all targets
 ```
 
-`make release` produces a self-contained zip under `dist/` containing the binary, all reference images (`imgs/`), and the config template (`cfgs/`).
+`make release` produces a distribution zip under `dist/` containing the binary, the `run.sh` launcher (for macOS), all reference images (`imgs/`), and the config template (`cfgs/`). 
+
+On Windows, this zip is a "green" (portable) version containing all necessary DLLs.
 
