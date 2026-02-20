@@ -27,6 +27,8 @@ func NewVision(robot *Robot, appTitle string, debug bool) *Vision {
 	}
 }
 
+// In order to compare images in memory
+// We must convert it to correct RGBA format
 func (v *Vision) normalizeImage(src image.Image) image.Image {
 	bounds := src.Bounds()
 	dst := image.NewRGBA(bounds)
@@ -34,6 +36,8 @@ func (v *Vision) normalizeImage(src image.Image) image.Image {
 	return dst
 }
 
+// Capture the app image
+// If app is not found, capture the screen
 func (v *Vision) CaptureAppImage() image.Image {
 	foundApp := true
 	ax, ay, aw, ah, err := v.robot.GetAppWindowBounds(v.appTitle)
@@ -63,6 +67,9 @@ func (v *Vision) CaptureAppImage() image.Image {
 	return img
 }
 
+// Capture the contact image at (x, y)
+// We need to capture the contact image to find the contact position
+// The contact image is centered on x,y and with 100px width and 40px height
 func (v *Vision) CaptureContact(x, y int) image.Image {
 	v.robot.MoveTo(-100, -100, MsgOutOfScreen) // hide cursor
 	captured, err := robotgo.CaptureImg(x-50, y-20, 100, 40)
@@ -73,6 +80,8 @@ func (v *Vision) CaptureContact(x, y int) image.Image {
 	return v.normalizeImage(captured)
 }
 
+// Find the position of the contact image
+// lastContactImg: the last contact image
 func (v *Vision) FindContactPosition(lastContactImg image.Image) (float32, image.Point) {
 	appImg := v.CaptureAppImage()
 	if appImg == nil {
@@ -82,6 +91,9 @@ func (v *Vision) FindContactPosition(lastContactImg image.Image) (float32, image
 	return bestMatch, bestPoints
 }
 
+// Check whether the contact list has changed, returns true if changed
+// logic: if the contact list has changed, the last contact position will change
+// if the contact list has not changed, the last contact position will not change
 func (v *Vision) CheckContactChanged(lastContactImg image.Image, lastContactPos image.Point) bool {
 	if lastContactImg == nil {
 		return true
@@ -131,6 +143,7 @@ func (v *Vision) FindPoint(images []string) (Point, error) {
 	return Point{}, fmt.Errorf("image not found in vision")
 }
 
+// Check whether the messages bar is shown (after clicking on messages-send)
 func (v *Vision) CheckMessagesBar() bool {
 	appDir := GetAppDir()
 	messagesbarImgs := []string{
@@ -140,5 +153,20 @@ func (v *Vision) CheckMessagesBar() bool {
 
 	// Returns nil error if found
 	_, err := v.FindPoint(messagesbarImgs)
+	return err == nil
+}
+
+// Check whether the messages popup is shown (after right-clicking on contact)
+func (v *Vision) CheckMessagesPopup() bool {
+	appDir := GetAppDir()
+	messagesPopupImgs := []string{
+		filepath.Join(appDir, "imgs/messages_send_en_light.png"),
+		filepath.Join(appDir, "imgs/messages_send_en_dark.png"),
+		filepath.Join(appDir, "imgs/messages_send_zh_light.png"),
+		filepath.Join(appDir, "imgs/messages_send_zh_dark.png"),
+	}
+
+	// Returns nil error if found
+	_, err := v.FindPoint(messagesPopupImgs)
 	return err == nil
 }

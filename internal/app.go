@@ -145,7 +145,7 @@ func RunScanner() {
 	vision := NewVision(robot, settings.AppTitle, settings.Debug)
 	appDir := GetAppDir()
 
-	// 1. Scan Contacts
+	// Scan Contacts
 	contactsImgs := []string{
 		filepath.Join(appDir, "imgs/contacts_light.png"),
 		filepath.Join(appDir, "imgs/contacts_light_selected.png"),
@@ -164,7 +164,7 @@ func RunScanner() {
 		fmt.Println("Contacts not found")
 	}
 
-	// 2. Scan More
+	// Scan More
 	moreImgs := []string{
 		filepath.Join(appDir, "imgs/more_light.png"),
 		filepath.Join(appDir, "imgs/more_dark.png"),
@@ -181,25 +181,9 @@ func RunScanner() {
 		fmt.Println("More not found")
 	}
 
-	// 3. Scan MessagesBar
-	messagesbarImgs := []string{
-		filepath.Join(appDir, "imgs/messages_bar_light.png"),
-		filepath.Join(appDir, "imgs/messages_bar_dark.png"),
-	}
-	if p, err := vision.FindPoint(messagesbarImgs); err == nil {
-		fmt.Printf("Found MessagesBar at: %v\n", p)
-		settings.MessagesBar.X = p.X
-		settings.MessagesBar.Y = p.Y
-		settings.MessagesBar.MarginX = p.W / 2
-		settings.MessagesBar.MarginY = p.H + 20 // Fixed number
-		settings.MessagesBar.W = p.W
-		settings.MessagesBar.H = p.H
-	} else {
-		fmt.Println("MessagesBar not found")
-	}
-
-	// 4. Scan MessagesPopup
+	// Scan MessagesPopup
 	wechat := NewWeChat(settings, robot, vision)
+	wechat.ActivateMessagesPopup()
 	wechat.WaitForMessagesPopup()
 
 	messagesSendImgs := []string{
@@ -220,8 +204,29 @@ func RunScanner() {
 		fmt.Println("MessagesPopup not found")
 	}
 
-	// Dismiss the menu
-	robot.PressEsc(MsgLastContact)
+	// Click the menu of MessagesPopup
+	robot.MoveTo(settings.MessagesPopup.X+settings.MessagesPopup.MarginX, settings.MessagesPopup.Y+settings.MessagesPopup.MarginY, MsgMessagesPopup)
+	robot.LeftClick(MsgMessagesPopup)
+
+	// Wait for MessageBar to appear
+	wechat.WaitForMessageBar()
+
+	// Scan MessagesBar
+	messagesbarImgs := []string{
+		filepath.Join(appDir, "imgs/messages_bar_light.png"),
+		filepath.Join(appDir, "imgs/messages_bar_dark.png"),
+	}
+	if p, err := vision.FindPoint(messagesbarImgs); err == nil {
+		fmt.Printf("Found MessagesBar at: %v\n", p)
+		settings.MessagesBar.X = p.X
+		settings.MessagesBar.Y = p.Y
+		settings.MessagesBar.MarginX = p.W / 2
+		settings.MessagesBar.MarginY = p.H + 20 // Fixed number
+		settings.MessagesBar.W = p.W
+		settings.MessagesBar.H = p.H
+	} else {
+		fmt.Println("MessagesBar not found")
+	}
 
 	// Save to settings.yml
 	SaveSettings(settings)
