@@ -86,7 +86,12 @@ func (w *WeChat) ActivateMessagesPopup() {
 	w.robot.RightClick(MsgLastContact)
 }
 
-func (w *WeChat) WaitForMessagesPopup() bool {
+func (w *WeChat) WaitForMessagesPopup(force bool) bool {
+	if w.config.FastMode && !force {
+		w.robot.Wait(MsgMessagesPopup)
+		return true
+	}
+
 	if w.config.Debug {
 		i18n.P.Printf("Waiting for messages popup to appear...\n")
 	}
@@ -110,7 +115,12 @@ func (w *WeChat) WaitForMessagesPopup() bool {
 	return false
 }
 
-func (w *WeChat) WaitForMessageBar() bool {
+func (w *WeChat) WaitForMessageBar(force bool) bool {
+	if w.config.FastMode && !force {
+		w.robot.Wait(MsgMessagesBar)
+		return true
+	}
+
 	if w.config.Debug {
 		i18n.P.Printf("Waiting for messages bar to appear...\n")
 	}
@@ -140,7 +150,7 @@ func (w *WeChat) SendMessage() {
 	w.robot.RightClick(MsgLastContact)
 
 	// Wait for the messages popup to appear dynamically
-	if !w.WaitForMessagesPopup() {
+	if !w.WaitForMessagesPopup(false) {
 		return
 	}
 
@@ -149,7 +159,7 @@ func (w *WeChat) SendMessage() {
 	w.robot.LeftClick(MsgMessagesPopup)
 
 	// Wait for the messages input area to appear dynamically
-	if !w.WaitForMessageBar() {
+	if !w.WaitForMessageBar(false) {
 		return
 	}
 
@@ -170,7 +180,7 @@ func (w *WeChat) ClearMessage() {
 	w.robot.RightClick(MsgLastContact)
 
 	// Wait for the messages popup to appear dynamically
-	if !w.WaitForMessagesPopup() {
+	if !w.WaitForMessagesPopup(false) {
 		return
 	}
 
@@ -179,7 +189,7 @@ func (w *WeChat) ClearMessage() {
 	w.robot.LeftClick(MsgMessagesPopup)
 
 	// Wait for the messages input area to appear dynamically
-	if !w.WaitForMessageBar() {
+	if !w.WaitForMessageBar(false) {
 		return
 	}
 

@@ -13,6 +13,7 @@ func main() {
 
 	if len(os.Args) < 2 {
 		i18n.P.Printf("Usage: auto-wechat <subcommand>\n")
+		i18n.P.Printf("Description: auto-wechat is a computer vision-based automation tool for WeChat, designed to bulk-send messages in clipboard to all contacts.\n\n")
 		i18n.P.Printf("Subcommands:\n")
 		i18n.P.Printf("  scan  - Scan for UI elements and save to settings.yml\n")
 		i18n.P.Printf("  proc  - Run automation process based on settings.yml\n")
@@ -23,9 +24,9 @@ func main() {
 	subcmd := os.Args[1]
 	switch subcmd {
 	case "scan":
-		internal.RunScanner()
+		internal.RunScan()
 	case "proc":
-		internal.RunAutomation()
+		internal.RunProc()
 	case "clear":
 		internal.RunClear()
 	default:

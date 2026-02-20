@@ -46,5 +46,7 @@ interval: 100
 check_end: true
 # 是否自动发送消息
 auto_send: true
+# 是否使用快速模式（跳过等待消息弹出和消息栏出现）
+fast_mode: false
 # 调试模式（显示调试信息，速度较慢）
 debug: false

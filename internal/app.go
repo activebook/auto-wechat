@@ -10,6 +10,13 @@ import (
 	hook "github.com/robotn/gohook"
 )
 
+const (
+	NotifyAppTitle     = "Auto WeChat"
+	NotifyJobDoneScan  = "UI element scanning is complete."
+	NotifyJobDoneProc  = "Messages successfully sent to the specified number of contacts."
+	NotifyJobDoneClear = "All unsent messages have been cleared."
+)
+
 func init() {
 	runtime.LockOSThread()
 }
@@ -36,7 +43,7 @@ func checkImgsFolder() bool {
 	return true
 }
 
-func RunAutomation() {
+func RunProc() {
 	settings, err := ReadSettings()
 	if err != nil {
 		i18n.P.Printf("Failed to load settings: %v\n", err)
@@ -79,6 +86,9 @@ func RunAutomation() {
 	}
 
 	i18n.P.Printf("Automation sequence completed.\n")
+
+	// Notify job done
+	Notify(NotifyAppTitle, NotifyJobDoneProc)
 }
 
 func RunClear() {
@@ -123,9 +133,12 @@ func RunClear() {
 	}
 
 	i18n.P.Printf("Automation sequence completed.\n")
+
+	// Notify job done
+	Notify(NotifyAppTitle, NotifyJobDoneClear)
 }
 
-func RunScanner() {
+func RunScan() {
 	settings, err := ReadSettings()
 	if err != nil {
 		// Fallback to empty settings for scanner if unable to read
@@ -184,7 +197,7 @@ func RunScanner() {
 	// Scan MessagesPopup
 	wechat := NewWeChat(settings, robot, vision)
 	wechat.ActivateMessagesPopup()
-	wechat.WaitForMessagesPopup()
+	wechat.WaitForMessagesPopup(true)
 
 	messagesSendImgs := []string{
 		filepath.Join(appDir, "imgs/messages_send_en_light.png"),
@@ -209,7 +222,7 @@ func RunScanner() {
 	robot.LeftClick(MsgMessagesPopup)
 
 	// Wait for MessageBar to appear
-	wechat.WaitForMessageBar()
+	wechat.WaitForMessageBar(true)
 
 	// Scan MessagesBar
 	messagesbarImgs := []string{
@@ -230,4 +243,7 @@ func RunScanner() {
 
 	// Save to settings.yml
 	SaveSettings(settings)
+
+	// Notify job done
+	Notify(NotifyAppTitle, NotifyJobDoneScan)
 }

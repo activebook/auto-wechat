@@ -46,5 +46,7 @@ interval: 100
 check_end: true
 # Whether to send message automatically
 auto_send: true
+# Whether to use fast mode (skip wait for messages popup and messages bar shown up)
+fast_mode: false
 # Debug mode (show debug message, very slow)
 debug: false

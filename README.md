@@ -69,6 +69,7 @@ make build
 | `interval` | 100 | Delay between actions (ms) |
 | `check_end` | `true` | Detect end-of-list via image comparison |
 | `auto_send` | `true` | Press Enter after pasting; set `false` to review first |
+| `fast_mode` | `false` | Skip waiting for UI element detection; use interval instead |
 | `debug` | `false` | Pause 1 s after each action and print step logs |
 
 ## Performance Optimization
