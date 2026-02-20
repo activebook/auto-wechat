@@ -13,6 +13,8 @@ type Point struct {
 	Y       int `yaml:"y"`
 	MarginX int `yaml:"margin_x"`
 	MarginY int `yaml:"margin_y"`
+	W       int `yaml:"w"`
+	H       int `yaml:"h"`
 }
 
 type Settings struct {

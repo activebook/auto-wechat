@@ -75,6 +75,20 @@ func (w *WeChat) GotoNextContact() bool {
 	return end
 }
 
+func (w *WeChat) WaitForMessagesPopup() {
+	// Go to Contacts
+	w.robot.MoveTo(w.config.Contacts.X+w.config.Contacts.MarginX, w.config.Contacts.Y+w.config.Contacts.MarginY, MsgContacts)
+	w.robot.LeftClick(MsgContacts)
+
+	// Right-click on More (LastContact)
+	w.robot.MoveTo(w.config.More.X+w.config.More.MarginX, w.config.More.Y+w.config.More.MarginY, MsgMore)
+	w.robot.LeftClick(MsgLastContact)
+	w.robot.RightClick(MsgLastContact)
+
+	// Wait for the messages popup to appear (1s)
+	w.robot.WaitTime(1000, MsgMessagesPopup)
+}
+
 func (w *WeChat) WaitForMessageBar() {
 	if w.config.Debug {
 		i18n.P.Printf("Waiting for messages bar to appear...\n")
@@ -92,7 +106,7 @@ func (w *WeChat) WaitForMessageBar() {
 		if w.config.Debug {
 			i18n.P.Printf("Messages bar not detected yet, retrying... (%d/%d)\n", i+1, maxRetries)
 		}
-		w.robot.Wait("WaitForMessageBar Interval")
+		w.robot.Wait(MsgMessagesBar)
 	}
 
 	if w.config.Debug {
@@ -106,7 +120,7 @@ func (w *WeChat) SendMessage() {
 	w.robot.RightClick(MsgLastContact)
 
 	// Go to Messages Popup
-	w.robot.MoveRelative(w.config.MessagesPopup.MarginX, w.config.MessagesPopup.MarginY, MsgMessagesPopup)
+	w.robot.MoveTo(w.config.MessagesPopup.X+w.config.MessagesPopup.MarginX, w.config.MessagesPopup.Y+w.config.MessagesPopup.MarginY, MsgMessagesPopup)
 	w.robot.LeftClick(MsgMessagesPopup)
 
 	// Wait for the messages input area to appear dynamically
@@ -129,7 +143,7 @@ func (w *WeChat) ClearMessage() {
 	w.robot.RightClick(MsgLastContact)
 
 	// Go to Messages
-	w.robot.MoveRelative(w.config.MessagesPopup.MarginX, w.config.MessagesPopup.MarginY, MsgMessagesPopup)
+	w.robot.MoveTo(w.config.MessagesPopup.X+w.config.MessagesPopup.MarginX, w.config.MessagesPopup.Y+w.config.MessagesPopup.MarginY, MsgMessagesPopup)
 	w.robot.LeftClick(MsgMessagesPopup)
 
 	// Wait for the messages input area to appear dynamically

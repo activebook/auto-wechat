@@ -140,6 +140,13 @@ func (r *Robot) Wait(msg string) {
 	}
 }
 
+func (r *Robot) WaitTime(tm int, msg string) {
+	robotgo.MilliSleep(tm)
+	if r.debug {
+		i18n.P.Printf("Wait: %s\n", msg)
+	}
+}
+
 func (r *Robot) ActivateApp(appTitle string, msg string) error {
 	if runtime.GOOS == "darwin" {
 		err := robotgo.ActiveName(appTitle)

@@ -1,0 +1,50 @@
+# -- Below are the coordinates of the buttons on WeChat app --
+# -- Auto set by auto-wechat scan --
+# The contacts button on WeChat app
+contacts:
+    x: 289
+    "y": 193
+    margin_x: 18
+    margin_y: 14
+    w: 37
+    h: 28
+# The more button on WeChat app
+more:
+    x: 293
+    "y": 949
+    margin_x: 100
+    margin_y: 10
+    w: 29
+    h: 21
+# The messages buttons bar on WeChat app
+messages_bar:
+    x: 593
+    "y": 785
+    margin_x: 109
+    margin_y: 88
+    w: 218
+    h: 38
+# The right click on contact, popup menu on WeChat app
+messages_popup:
+    x: 399
+    "y": 923
+    margin_x: 40
+    margin_y: 14
+    w: 80
+    h: 28
+
+# -- Below are the settings for auto-wechat --
+# -- User must set by themselves --
+# -- Used in auto-wechat proc and auto-wechat clear --
+# Application title to activate
+app_title: WeChat
+# Max count of messages to send
+max_count: 6
+# Interval between messages sent (ms) [100 - 500]
+interval: 100
+# Whether to check the last contact is the end of contacts list
+check_end: true
+# Whether to send message automatically
+auto_send: true
+# Debug mode (show debug message, very slow)
+debug: false

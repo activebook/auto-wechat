@@ -123,7 +123,8 @@ func (v *Vision) FindPoint(images []string) (Point, error) {
 		_, bestMatch, _, bestPoint := gcv.FindImg(template, screenshot)
 
 		if bestMatch > 0.8 {
-			return Point{X: bestPoint.X, Y: bestPoint.Y}, nil
+			bounds := template.Bounds()
+			return Point{X: bestPoint.X, Y: bestPoint.Y, W: bounds.Dx(), H: bounds.Dy()}, nil
 		}
 	}
 

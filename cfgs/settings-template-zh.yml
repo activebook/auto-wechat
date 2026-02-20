@@ -1,0 +1,50 @@
+# -- 以下是微信应用程序按钮的坐标 --
+# -- 由 auto-wechat 扫描自动设置 --
+# 微信应用程序中的联系人按钮
+contacts:
+    x: 289
+    "y": 193
+    margin_x: 18
+    margin_y: 14
+    w: 37
+    h: 28
+# 微信应用程序中的更多按钮
+more:
+    x: 293
+    "y": 949
+    margin_x: 100
+    margin_y: 10
+    w: 29
+    h: 21
+# 微信应用程序中的消息按钮栏
+messages_bar:
+    x: 593
+    "y": 785
+    margin_x: 109
+    margin_y: 88
+    w: 218
+    h: 38
+# 微信应用程序中右键点击联系人弹出的菜单
+messages_popup:
+    x: 399
+    "y": 923
+    margin_x: 40
+    margin_y: 14
+    w: 80
+    h: 28
+
+# -- 以下是 auto-wechat 的设置 --
+# -- 需由用户自行配置 --
+# -- 用于 auto-wechat proc 和 auto-wechat clear --
+# 要激活的应用程序标题
+app_title: WeChat
+# 最大发送消息数量
+max_count: 6
+# 消息发送间隔（毫秒）[100 - 500]
+interval: 100
+# 是否检查最后一个联系人是否为联系人列表末尾
+check_end: true
+# 是否自动发送消息
+auto_send: true
+# 调试模式（显示调试信息，速度较慢）
+debug: false

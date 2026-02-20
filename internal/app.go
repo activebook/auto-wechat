@@ -156,6 +156,10 @@ func RunScanner() {
 		fmt.Printf("Found Contacts at: %v\n", p)
 		settings.Contacts.X = p.X
 		settings.Contacts.Y = p.Y
+		settings.Contacts.MarginX = p.W / 2
+		settings.Contacts.MarginY = p.H / 2
+		settings.Contacts.W = p.W
+		settings.Contacts.H = p.H
 	} else {
 		fmt.Println("Contacts not found")
 	}
@@ -169,6 +173,10 @@ func RunScanner() {
 		fmt.Printf("Found More at: %v\n", p)
 		settings.More.X = p.X
 		settings.More.Y = p.Y
+		settings.More.MarginX = 100 // Fixed number
+		settings.More.MarginY = p.H / 2
+		settings.More.W = p.W
+		settings.More.H = p.H
 	} else {
 		fmt.Println("More not found")
 	}
@@ -182,9 +190,38 @@ func RunScanner() {
 		fmt.Printf("Found MessagesBar at: %v\n", p)
 		settings.MessagesBar.X = p.X
 		settings.MessagesBar.Y = p.Y
+		settings.MessagesBar.MarginX = p.W / 2
+		settings.MessagesBar.MarginY = p.H + 20 // Fixed number
+		settings.MessagesBar.W = p.W
+		settings.MessagesBar.H = p.H
 	} else {
 		fmt.Println("MessagesBar not found")
 	}
+
+	// 4. Scan MessagesPopup
+	wechat := NewWeChat(settings, robot, vision)
+	wechat.WaitForMessagesPopup()
+
+	messagesSendImgs := []string{
+		filepath.Join(appDir, "imgs/messages_send_en_light.png"),
+		filepath.Join(appDir, "imgs/messages_send_en_dark.png"),
+		filepath.Join(appDir, "imgs/messages_send_zh_light.png"),
+		filepath.Join(appDir, "imgs/messages_send_zh_dark.png"),
+	}
+	if p, err := vision.FindPoint(messagesSendImgs); err == nil {
+		fmt.Printf("Found MessagesPopup at: %v\n", p)
+		settings.MessagesPopup.X = p.X
+		settings.MessagesPopup.Y = p.Y
+		settings.MessagesPopup.MarginX = p.W / 2
+		settings.MessagesPopup.MarginY = p.H / 2
+		settings.MessagesPopup.W = p.W
+		settings.MessagesPopup.H = p.H
+	} else {
+		fmt.Println("MessagesPopup not found")
+	}
+
+	// Dismiss the menu
+	robot.PressEsc(MsgLastContact)
 
 	// Save to settings.yml
 	SaveSettings(settings)
