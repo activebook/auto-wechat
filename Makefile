@@ -23,7 +23,7 @@ build:
 
 ## run: build and execute the binary
 run: build
-	./$(BINARY_NAME)
+	@if [ -f "./run.sh" ]; then ./run.sh $(ARGS); else ./$(BINARY_NAME) $(ARGS); fi
 
 ## test: run unit tests
 test:
@@ -78,6 +78,7 @@ release: clean
 		main.go
 	cp cfgs/*.yml $(DIST_DIR)/$(RELEASE_NAME)/cfgs/
 	cp imgs/*.png $(DIST_DIR)/$(RELEASE_NAME)/imgs/
+	@if [ -f "run.sh" ]; then cp run.sh $(DIST_DIR)/$(RELEASE_NAME)/; fi
 	cd $(DIST_DIR) && zip -r $(RELEASE_NAME).zip $(RELEASE_NAME)
 	@echo "✓ Release archive: $(DIST_DIR)/$(RELEASE_NAME).zip"
 
